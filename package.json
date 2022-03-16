@@ -1,0 +1,22 @@
+{
+  "name": "dss2021-22--cw2----pgt13",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kcthomasleung/DSS2021-22--CW2----PGT13.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kcthomasleung/DSS2021-22--CW2----PGT13/issues"
+  },
+  "homepage": "https://github.com/kcthomasleung/DSS2021-22--CW2----PGT13#readme",
+  "dependencies": {
+    "express": "^4.17.3"
+  }
+}
