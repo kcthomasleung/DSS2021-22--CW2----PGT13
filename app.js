@@ -25,3 +25,7 @@ app.get("/", function (req, res) {
   let title = "Blog Website";
   res.render("index", { title: title });
 });
+
+app.listen(PORT, () => {
+  console.log(`Server running on port: http://localhost:${PORT}`);
+});
