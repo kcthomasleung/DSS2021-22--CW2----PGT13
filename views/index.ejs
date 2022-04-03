@@ -1,17 +1,29 @@
 <%- include('head') %>
     <%- include('header') %>
 
-        <nav>
-            <h1>Welcome to the
-                <%= title %>
-            </h1>
-        </nav>
-
-        <main>
-            <section class="description">
-                <h1>Home Page</h1>
-                <h1>Register</h1>
-            </section>
+        <main id="blogs">
+            <%- include('blog') %>
         </main>
 
         <%- include('footer') %>
+        <style>
+            #blog{
+                width: 500px;
+                justify-content: center;
+                display: block;
+                margin: auto;
+                border-color: black;
+                border-width: 5px;
+                color: blue;
+                margin:0 auto
+            }
+            #blog_title{
+                width: 500px;
+                justify-content: center;
+                display: block;
+                margin: auto;
+                border-color: black;
+                border-width: 5px;
+                color: blue;
+            }
+        </style>

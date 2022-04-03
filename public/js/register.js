@@ -1,4 +1,5 @@
-const {createHash, scryptSync, randomBytes} = require('crypto');
+const register_form = document.querySelector("#register_form");
+
 
 function signup(email, password) {
     const salt = randomBytes(16).toString('hex');
