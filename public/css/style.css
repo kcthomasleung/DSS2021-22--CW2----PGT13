@@ -1,0 +1,39 @@
+#mainbody {
+    width: 39%;
+    margin: auto;
+}
+
+.rl {
+    margin-left: 330px;
+}
+
+table {
+    border-style: groove;
+    border-width: 1px;
+    border-color: black;
+}
+
+body {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+#blog {
+    width: 500px;
+    justify-content: center;
+    display: block;
+    margin: auto;
+    border-color: black;
+    border-width: 5px;
+    color: blue;
+    margin: 0 auto
+}
+
+#blog_title {
+    width: 500px;
+    justify-content: center;
+    display: block;
+    margin: auto;
+    border-color: black;
+    border-width: 5px;
+    color: blue;
+}
