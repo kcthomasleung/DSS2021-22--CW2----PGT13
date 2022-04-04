@@ -11,10 +11,13 @@ table {
     border-style: groove;
     border-width: 1px;
     border-color: black;
+    background-color: white;
+    margin-top: 64px;
 }
 
 body {
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    background-color: floralwhite;
 }
 
 #blog {
