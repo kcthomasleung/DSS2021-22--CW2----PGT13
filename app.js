@@ -51,6 +51,7 @@ app.post("/register", async (req, res) => {
   const salt = randomBytes(16).toString('hex');
   const hashedPassword = hash(password + salt);
 
+  // insert user into database
   try {
     const client = new Pool(config);
     const result = await client.query(
@@ -62,8 +63,12 @@ app.post("/register", async (req, res) => {
   }
   catch (err) {
     console.log(err);
+    res.send("Email or username already exists, please try loggin in.");
+    setTimeout(() => {
+      res.redirect('/login');
+    }, 2000)
   }
-})
+});
 
 app.listen(PORT, () => {
   console.log(`Server running on port: http://localhost:${PORT}`);
