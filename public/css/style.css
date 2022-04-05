@@ -1,0 +1,46 @@
+#mainbody {
+    width: 39%;
+    margin: auto;
+}
+
+.rl {
+    margin-left: 330px;
+}
+
+table {
+    border-style: groove;
+    border-width: 1px;
+    border-color: black;
+    background-color: white;
+    margin-top: 64px;
+}
+
+.bt {
+    border-bottom: 1px solid black;
+}
+
+body {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    background-color: floralwhite;
+}
+
+#blog {
+    width: 500px;
+    justify-content: center;
+    display: block;
+    margin: auto;
+    border-color: black;
+    border-width: 5px;
+    color: blue;
+    margin: 0 auto
+}
+
+#blog_title {
+    width: 500px;
+    justify-content: center;
+    display: block;
+    margin: auto;
+    border-color: black;
+    border-width: 5px;
+    color: blue;
+}
