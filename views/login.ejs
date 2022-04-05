@@ -1,0 +1,17 @@
+<%- include('head') %>
+    <%- include('header') %>
+    <h1>Login page</h1>
+    <fieldset>
+        <form id="login_form" action="login" method="post" enctype="text/html">
+            <label for="email">Email*: </label>
+            <input type="email" id="email" name="email" placeholder="Email" required><br /><br />
+    
+            <label for="password"> Password*: </label>
+            <input type="password" name="password" id="password" required><br /><br />
+      
+          <input type="submit" value="Submit" />
+        </form>
+      </fieldset>
+
+
+<%- include('footer') %>

@@ -40,12 +40,29 @@ app.get("/register", function (req, res) {
   res.render("register");
 });
 
+// render login page
+app.get("/login", function (req, res) {
+  res.render("login");
+});
+
 // register user function
 app.post("/register", async (req, res) => {
   const { username, email, password } = req.body;
   const salt = randomBytes(16).toString('hex');
-  console.log(salt)
   const hashedPassword = hash(password + salt);
+
+  try {
+    const client = new Pool(config);
+    const result = await client.query(
+      "INSERT INTO users (username, email, password, salt) VALUES ($1, $2, $3, $4) RETURNING *",
+      [username, email, hashedPassword, salt]
+    );
+
+    res.redirect("/login");
+  }
+  catch (err) {
+    console.log(err);
+  }
 })
 
 app.listen(PORT, () => {
