@@ -58,7 +58,7 @@ app.get("/login", function(req, res) {
 
 // register user function
 app.post("/register", async(req, res) => {
-    const { username, email, password } = req.body;
+    const { username, email, password, twofa } = req.body;
     const salt = randomBytes(16).toString('hex');
     const hashedPassword = hash(password + salt);
 
@@ -66,7 +66,7 @@ app.post("/register", async(req, res) => {
     try {
         const client = new Pool(config);
         const result = await client.query(
-            "INSERT INTO users (username, email, password, salt) VALUES ($1, $2, $3, $4) RETURNING *", [username, email, hashedPassword, salt]
+            "INSERT INTO users (username, email, password, salt, twofa) VALUES ($1, $2, $3, $4, $5) RETURNING *", [username, email, hashedPassword, salt, twofa]
         );
         // var f = "user succesfully updated" + req.body.email;
         //console.log(f);
@@ -135,7 +135,6 @@ app.get('/logout', (req, res) => {
     });
 
 });
-
 
 
 

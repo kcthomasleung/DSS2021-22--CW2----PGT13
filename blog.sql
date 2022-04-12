@@ -9,6 +9,8 @@ create table users (
 	email varchar(100) unique not null,
 	password varchar(200) not null,
 	salt varchar(200) not null,
+	created_at timestamp default now(),
+	twofa boolean default false,
 	primary key (user_id)
 );
 
