@@ -11,18 +11,47 @@
 
                 <%= record %>
                     <% } %>
-                        <fieldset>
+                        <table class="register_table">
                             <form id="register_form" action="register" method="post" enctype="text/html">
-                                <label for="email">Email*: </label>
-                                <input type="email" id="email" name="email" placeholder="Email" required><br /><br />
+                                <tr>
+                                    <td> <label for="email">Email*: </label></td>
+                                    <td>
+                                        <input type="email" id="email" name="email" placeholder="Email" required>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="username"> Username*: </label></td>
+                                    <td>
+                                        <input type="text" name="username" id="username" placeholder="Username" required>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td> <label for="password"> Password*: </label> </td>
+                                    <td>
+                                        <input type="password" name="password" id="password" placeholder="password" required>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td> <label for="password_confirm"> Confirm Password*: </label> </td>
+                                    <td>
+                                        <input type="password" name="password_confirm" id="password_confirm" required>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>  <label for="2fa">Would you like to use 2 Factor Authentication?</label> </td>
+                                    <td>
+                                        <input type="radio" id="true" name="twofa" value="True">
+                                        <label for="true">True</label> 
+                                        <input type="radio" id="false" name="twofa" value="False">
+                                        <label for="false">False</label>
+                                    </td>
+                                </tr>
 
-                                <label for="username"> Username*: </label>
-                                <input type="text" name="username" id="username" placeholder="Username" required><br /><br />
-
-                                <label for="password"> Password*: </label>
-                                <input type="password" name="password" id="password" required><br /><br />
-
-                                <input type="submit" value="Submit" />
+                                <tr>
+                                    <td></td>
+                                    <td><input type="submit" value="Submit" /></td>
+                                </tr>
+                                
                             </form>
-                        </fieldset>
+                        </table>
                         <%- include('footer') %>
