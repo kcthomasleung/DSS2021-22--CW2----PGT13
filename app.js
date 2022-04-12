@@ -27,13 +27,14 @@ app.use(bodyParser.json());
 // parse application/x-www-form-urlencoded
 app.use(express.json())
 app.use(express.urlencoded());
+
 // session
 app.use(session({
     secret: 'secret-key',
     resave: false,
     saveUninitialized: false,
-
 }));
+
 //set view engine to use ejs templates
 app.set("view engine", "ejs");
 
@@ -75,15 +76,10 @@ app.post("/register", async(req, res) => {
         console.log(err);
         res.render('register', { record: "Email or username already exists, please try loggin in" });
         // res.send("Email or username already exists, please try loggin in.");
-        setTimeout(() => {
-            res.redirect('login');
-        }, 2000)
     }
 });
 
 // login page
-
-
 app.post('/login', async(req, res, next) => {
     //console.log(req.body.email);
     const email = req.body.email;
@@ -99,17 +95,11 @@ app.post('/login', async(req, res, next) => {
         const hashedPassword_c = hash(password + get_salt);
         const q2 = `SELECT user_id, username, email, password, salt	
         FROM public.users where email='${email}' and password='${hashedPassword_c}'`;
-        //console.log(q2);
         client.query(q2).then(results_c => {
-            //console.log(results_c);
-            //console.log(results_c.rowCount);
             if (results_c.rowCount == '1') {
-
-                //console.log('right');
                 //req.session.user = { 'id': 123 };
 
                 //req.session = 875278547825478254;
-                //console.log(req.session.id);
                 sess = req.session;
                 sess.id = req.session.id;
 
