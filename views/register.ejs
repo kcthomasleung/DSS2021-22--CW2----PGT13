@@ -1,20 +1,28 @@
 <%- include('head') %>
     <%- include('header') %>
-    <h1>Register page</h1>
-    <fieldset>
-        <form id="register_form" action="register" method="post" enctype="text/html">
-            <label for="email">Email*: </label>
-            <input type="email" id="email" name="email" placeholder="Email" required><br /><br />
-    
-            <label for="username"> Username*: </label>
-            <input type="text" name="username" id="username" placeholder="Username" required><br /><br />
-            
-            <label for="password"> Password*: </label>
-            <input type="password" name="password" id="password" required><br /><br />
-      
-          <input type="submit" value="Submit" />
-        </form>
-      </fieldset>
+        <h1>Register page</h1>
 
 
-<%- include('footer') %>
+        <% if(typeof record == 'undefined' || record == null ){ %>
+
+
+
+            <% } else{ %>
+
+                <%= record %>
+                    <% } %>
+                        <fieldset>
+                            <form id="register_form" action="register" method="post" enctype="text/html">
+                                <label for="email">Email*: </label>
+                                <input type="email" id="email" name="email" placeholder="Email" required><br /><br />
+
+                                <label for="username"> Username*: </label>
+                                <input type="text" name="username" id="username" placeholder="Username" required><br /><br />
+
+                                <label for="password"> Password*: </label>
+                                <input type="password" name="password" id="password" required><br /><br />
+
+                                <input type="submit" value="Submit" />
+                            </form>
+                        </fieldset>
+                        <%- include('footer') %>
