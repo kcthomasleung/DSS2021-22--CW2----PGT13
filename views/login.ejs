@@ -1,17 +1,40 @@
 <%- include('head') %>
     <%- include('header') %>
-    <h1>Login page</h1>
-    <fieldset>
-        <form id="login_form" action="login" method="post" enctype="text/html">
-            <label for="email">Email*: </label>
-            <input type="email" id="email" name="email" placeholder="Email" required><br /><br />
-    
-            <label for="password"> Password*: </label>
-            <input type="password" name="password" id="password" required><br /><br />
-      
-          <input type="submit" value="Submit" />
-        </form>
-      </fieldset>
+        <h1>Login page</h1>
+        <% if(typeof login_ss == 'undefined' || login_ss == null ){ %>
+
+            <% } else{ %>
+
+                <%= login_ss %>
+                    <% } %>
+                        <table class="login_table">
+                            <form id="login_form" action="login" method="post" enctype="text/html">
+
+                                <tr>
+                                    <td> <label for="email">Email*: </label></td>
+                                    <td>
+                                        <input type="email" id="email" name="email" placeholder="Email" required>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td> <label for="password"> Password*: </label> </td>
+                                    <td>
+                                        <input type="password" name="password" id="password" placeholder="password" required>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td></td>
+                                    <td><input type="submit" value="Submit" /></td>
+                                </tr>
 
 
-<%- include('footer') %>
+
+
+
+                            </form>
+                        </table>
+
+
+
+                        <%- include('footer') %>

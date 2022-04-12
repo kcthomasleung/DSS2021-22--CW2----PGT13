@@ -6,6 +6,13 @@
             <nav class="navbar">
                 <a href="./">Home</a> |
                 <a href="./register" class="rl">|  Register</a> |
-                <a href="/login">Login</a>
+
+                <% if(typeof login_ss == 'undefined' || login_ss == null ){ %>
+                    <a href="/login">Login</a>
+                    <% } else{ %>
+
+                        <a href="/logout">Logout</a>
+
+                        <%    } %>
             </nav>
         </header>

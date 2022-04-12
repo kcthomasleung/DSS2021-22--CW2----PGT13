@@ -24,6 +24,12 @@ body {
     background-color: floralwhite;
 }
 
+.login_table {
+    width: 500px;
+    height: 209px;
+    padding: 52px 0px 32px 64px;
+}
+
 #blog {
     width: 500px;
     justify-content: center;
