@@ -70,6 +70,68 @@ app.post("/register", async (req, res) => {
   }
 });
 
+<<<<<<< Updated upstream
+=======
+// login page
+app.post('/login', async(req, res, next) => {
+    //console.log(req.body.email);
+    // const email = req.body.email;
+    // const password = req.body.password;
+    const pool = new Pool(config);
+    const client = await pool.connect();
+    console.log(req.body)
+
+    await client.query("SELECT user_id, username, email, password, salt	FROM public.users where email=$1", [req.body.email]).then(results => {
+        client.release();
+        const get_salt = results.rows[0].salt;
+        const hashedPassword_c = hash(password + get_salt);
+        
+        p="SELECT user_id, username, email, password, salt FROM public.users where email= and password=$2", [req.body.email, hashedPassword_c];
+        console.log(p);
+        client.query("SELECT user_id, username, email, password, salt FROM public.users where email=$1 and password=$2", [req.body.email, hashedPassword_c]).then(results_c => {
+            if (results_c.rowCount == '1') {
+                //req.session.user = { 'id': 123 };
+
+                //req.session = 875278547825478254;
+                sess = req.session;
+                sess.id = req.session.id;
+
+                res.render('write_blog', { login_ss: 'User successfully Login ' + sess.id });
+
+                //console.log(req.session);
+            } else {
+                //  console.log('wrong');
+                res.render('Login', { login_ss: 'Email ID or Password is wrong' });
+            }
+
+        })
+
+        //console.log(get_salt);
+        //res.render('users', { record: data });
+
+    }).catch(err => {
+        console.log('email or username')
+
+        res.render('Login', { login_ss: 'Email ID or Password is wrong' });
+    })
+
+});
+
+// logout code
+app.get('/logout', (req, res) => {
+    req.session.destroy((err) => {
+        if (err) {
+            return console.log(err);
+        }
+        res.render('Login');
+        //res.redirect('/');
+    });
+
+});
+
+
+
+>>>>>>> Stashed changes
 app.listen(PORT, () => {
   console.log(`Server running on port: http://localhost:${PORT}`);
 });
