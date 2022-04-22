@@ -11,6 +11,10 @@ const { json, jsonp } = require("express/lib/response");
 const req = require("express/lib/request");
 const { createHash, scryptSync, randomBytes } = require('crypto');
 const session = require('express-session');
+const cookieParser = require('cookie-parser');
+const helmet = require("helmet");
+// allow the app to use cookieparser
+app.use(helmet());
 
 var sess;
 // create hashing function
@@ -20,6 +24,10 @@ function hash(input) {
 
 // static file directory
 app.use(express.static(path.join(__dirname, "public")));
+
+
+//cookie
+app.use(cookieParser());
 
 // parse application/json
 app.use(bodyParser.json());
@@ -35,6 +43,12 @@ app.use(session({
     saveUninitialized: false,
 }));
 
+
+//cookie
+app.get('/check', (req, res) => {
+    res.cookie(`Cookie token name`, `encrypted cookie string Value`);
+    res.send('Cookie have been saved successfully');
+});
 //set view engine to use ejs templates
 app.set("view engine", "ejs");
 
@@ -86,27 +100,26 @@ app.post('/login', async(req, res, next) => {
     // const password = req.body.password;
     const pool = new Pool(config);
     const client = await pool.connect();
-    console.log(req.body)
+    // const q = `SELECT user_id, username, email, password, salt	FROM public.users where email='${email}' `;
+    // const q = "SELECT user_id, username, email, password, salt	FROM public.users where email=$1",[email];
 
-    await client.query("SELECT user_id, username, email, password, salt	FROM public.users where email=$1", [req.body.email]).then(results => {
+    await client.query("SELECT user_id, username, email, password, salt	FROM public.users where email=$1", [email]).then(results => {
         client.release();
         const get_salt = results.rows[0].salt;
         const hashedPassword_c = hash(password + get_salt);
-        
-        client.query("SELECT user_id, username, email, password, salt FROM public.users where email=$1 and password=$2", [req.body.email, hashedPassword_c]).then(results_c => {
-
+        //const q2 = `SELECT user_id, username, email, password, salt	 FROM public.users where email='${email}' and password='${hashedPassword_c}'`;
+        //const q2 = "SELECT user_id, username, email, password, salt	 FROM public.users where email=$1 and password=$2", [email, hashedPassword_c];
+        client.query("SELECT user_id, username, email, password, salt	 FROM public.users where email=$1 and password=$2", [email, hashedPassword_c]).then(results_c => {
             if (results_c.rowCount == '1') {
-                //req.session.user = { 'id': 123 };
 
-                //req.session = 875278547825478254;
                 sess = req.session;
                 sess.id = req.session.id;
 
                 res.render('write_blog', { login_ss: 'User successfully Login ' + sess.id });
 
-                //console.log(req.session);
+
             } else {
-                //  console.log('wrong');
+
                 res.render('Login', { login_ss: 'Email ID or Password is wrong' });
             }
 
@@ -116,7 +129,7 @@ app.post('/login', async(req, res, next) => {
         //res.render('users', { record: data });
 
     }).catch(err => {
-        console.log('email or username')
+        console.log('email or username is not correct')
 
         res.render('Login', { login_ss: 'Email ID or Password is wrong' });
     })
