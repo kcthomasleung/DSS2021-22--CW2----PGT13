@@ -70,8 +70,6 @@ app.post("/register", async (req, res) => {
   }
 });
 
-<<<<<<< Updated upstream
-=======
 // login page
 app.post('/login', async(req, res, next) => {
     //console.log(req.body.email);
@@ -129,9 +127,6 @@ app.get('/logout', (req, res) => {
 
 });
 
-
-
->>>>>>> Stashed changes
 app.listen(PORT, () => {
   console.log(`Server running on port: http://localhost:${PORT}`);
 });
