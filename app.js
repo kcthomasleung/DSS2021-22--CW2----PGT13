@@ -95,7 +95,6 @@ app.post("/register", async(req, res) => {
 
 // login page
 app.post('/login', async(req, res, next) => {
-    //console.log(req.body.email);
     const email = req.body.email;
     const password = req.body.password;
     const pool = new Pool(config);
@@ -106,11 +105,10 @@ app.post('/login', async(req, res, next) => {
     await client.query("SELECT user_id, username, email, password, salt	FROM public.users where email=$1", [email]).then(results => {
         client.release();
         const get_salt = results.rows[0].salt;
-
         const hashedPassword_c = hash(password + get_salt);
         //const q2 = `SELECT user_id, username, email, password, salt	 FROM public.users where email='${email}' and password='${hashedPassword_c}'`;
         //const q2 = "SELECT user_id, username, email, password, salt	 FROM public.users where email=$1 and password=$2", [email, hashedPassword_c];
-        client.query("SELECT user_id, username, email, password, salt	 FROM public.users where email=$1 and password=$2", [email, hashedPassword_c]).then(results_c => {
+        client.query("SELECT user_id, username, email, password, salt FROM public.users where email=$1 and password=$2", [email, hashedPassword_c]).then(results_c => {
             if (results_c.rowCount == '1') {
 
                 sess = req.session;
@@ -134,7 +132,6 @@ app.post('/login', async(req, res, next) => {
 
         res.render('Login', { login_ss: 'Email ID or Password is wrong' });
     })
-
 });
 
 // logout code
@@ -148,7 +145,6 @@ app.get('/logout', (req, res) => {
     });
 
 });
-
 
 
 app.listen(PORT, () => {
