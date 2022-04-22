@@ -11,6 +11,8 @@ const { json, jsonp } = require("express/lib/response");
 const req = require("express/lib/request");
 const { createHash, scryptSync, randomBytes } = require('crypto');
 const session = require('express-session');
+const cookieParser = require('cookie-parser');
+
 
 var sess;
 // create hashing function
@@ -20,6 +22,10 @@ function hash(input) {
 
 // static file directory
 app.use(express.static(path.join(__dirname, "public")));
+
+
+//cookie
+app.use(cookieParser());
 
 // parse application/json
 app.use(bodyParser.json());
@@ -35,6 +41,19 @@ app.use(session({
     saveUninitialized: false,
 }));
 
+
+//cookie
+app.get('/', (req, res) => {
+    res.cookie(`Cookie token name`, `encrypted cookie string Value`, {
+        maxAge: 5000,
+        // expires works the same as the maxAge
+        expires: new Date('01 12 2022'),
+        secure: true,
+        httpOnly: true,
+        sameSite: 'lax'
+    });
+    res.send('Cookie have been saved successfully');
+});
 //set view engine to use ejs templates
 app.set("view engine", "ejs");
 
@@ -117,7 +136,7 @@ app.post('/login', async(req, res, next) => {
         //res.render('users', { record: data });
 
     }).catch(err => {
-        console.log('email or username')
+        console.log('email or username is not correct')
 
         res.render('Login', { login_ss: 'Email ID or Password is wrong' });
     })
