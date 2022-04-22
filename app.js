@@ -9,8 +9,10 @@ const Pool = require("pg").Pool;
 const bodyParser = require("body-parser");
 const { json, jsonp } = require("express/lib/response");
 const req = require("express/lib/request");
-const {createHash, scryptSync, randomBytes} = require('crypto');
+const { createHash, scryptSync, randomBytes } = require('crypto');
+const session = require('express-session');
 
+var sess;
 // create hashing function
 function hash(input) {
     return createHash('sha256').update(input).digest('hex');
@@ -26,48 +28,55 @@ app.use(bodyParser.json());
 app.use(express.json())
 app.use(express.urlencoded());
 
+// session
+app.use(session({
+    secret: 'secret-key',
+    resave: false,
+    saveUninitialized: false,
+}));
+
 //set view engine to use ejs templates
 app.set("view engine", "ejs");
 
 // set root page to index.ejs and pass in the title of the webpage
-app.get("/", function (req, res) {
-  let title = "Blog Website";
-  res.render("index", { title: title });
+app.get("/", function(req, res) {
+    let title = "Blog Website";
+    res.render("index", { title: title });
 });
 
 // render register page
-app.get("/register", function (req, res) {
-  res.render("register");
+app.get("/register", function(req, res) {
+    res.render("register");
 });
 
 // render login page
-app.get("/login", function (req, res) {
-  res.render("login");
+app.get("/login", function(req, res) {
+    res.render("login");
 });
 
+
+
 // register user function
-app.post("/register", async (req, res) => {
-  const { username, email, password } = req.body;
-  const salt = randomBytes(16).toString('hex');
-  const hashedPassword = hash(password + salt);
+app.post("/register", async(req, res) => {
+    const { username, email, password, twofa } = req.body;
+    const salt = randomBytes(16).toString('hex');
+    const hashedPassword = hash(password + salt);
 
-  // insert user into database
-  try {
-    const client = new Pool(config);
-    const result = await client.query(
-      "INSERT INTO users (username, email, password, salt) VALUES ($1, $2, $3, $4) RETURNING *",
-      [username, email, hashedPassword, salt]
-    );
-
-    res.redirect("/login");
-  }
-  catch (err) {
-    console.log(err);
-    res.send("Email or username already exists, please try loggin in.");
-    setTimeout(() => {
-      res.redirect('/login');
-    }, 2000)
-  }
+    // insert user into database
+    try {
+        const client = new Pool(config);
+        const result = await client.query(
+            "INSERT INTO users (username, email, password, salt, twofa) VALUES ($1, $2, $3, $4, $5) RETURNING *", [username, email, hashedPassword, salt, twofa]
+        );
+        // var f = "user succesfully updated" + req.body.email;
+        //console.log(f);
+        res.render('register', { record: "user succesfully updated::" + email });
+        // res.redirect("/login");
+    } catch (err) {
+        console.log(err);
+        res.render('register', { record: "Email or username already exists, please try loggin in" });
+        // res.send("Email or username already exists, please try loggin in.");
+    }
 });
 
 // login page
@@ -85,6 +94,7 @@ app.post('/login', async(req, res, next) => {
         const hashedPassword_c = hash(password + get_salt);
         
         client.query("SELECT user_id, username, email, password, salt FROM public.users where email=$1 and password=$2", [req.body.email, hashedPassword_c]).then(results_c => {
+
             if (results_c.rowCount == '1') {
                 //req.session.user = { 'id': 123 };
 
@@ -124,6 +134,7 @@ app.get('/logout', (req, res) => {
 
 });
 
+
 app.listen(PORT, () => {
-  console.log(`Server running on port: http://localhost:${PORT}`);
+    console.log(`Server running on port: http://localhost:${PORT}`);
 });
