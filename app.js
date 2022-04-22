@@ -84,8 +84,6 @@ app.post('/login', async(req, res, next) => {
         const get_salt = results.rows[0].salt;
         const hashedPassword_c = hash(password + get_salt);
         
-        p="SELECT user_id, username, email, password, salt FROM public.users where email= and password=$2", [req.body.email, hashedPassword_c];
-        console.log(p);
         client.query("SELECT user_id, username, email, password, salt FROM public.users where email=$1 and password=$2", [req.body.email, hashedPassword_c]).then(results_c => {
             if (results_c.rowCount == '1') {
                 //req.session.user = { 'id': 123 };
@@ -112,7 +110,6 @@ app.post('/login', async(req, res, next) => {
 
         res.render('Login', { login_ss: 'Email ID or Password is wrong' });
     })
-
 });
 
 // logout code
