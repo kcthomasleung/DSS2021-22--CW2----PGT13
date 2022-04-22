@@ -55,6 +55,7 @@ app.set("view engine", "ejs");
 // set root page to index.ejs and pass in the title of the webpage
 app.get("/", function(req, res) {
     let title = "Blog Website";
+    const username = '';
     res.render("index", { title: title });
 });
 
@@ -114,9 +115,14 @@ app.post('/login', async(req, res, next) => {
             if (results_c.rowCount == '1') {
 
                 sess = req.session;
-                sess.id = req.session.id;
-
-                res.render('write_blog', { login_ss: 'User successfully Login ' + sess.id });
+                id = req.session.id;
+                // console.log(req.cookies);
+                //username = id;
+                //console.log(useusernamername);
+                res.cookie('username', id, { maxAge: 900000, httpOnly: true });
+                //  res.cookie('pardeep', 'kjghjhv', { maxAge: 900000, httpOnly: true });
+                // res.cookie("username", username);
+                res.render('write_blog', { login_ss: 'User successfully Login ' + res.cookie.username });
 
 
             } else {
@@ -143,6 +149,7 @@ app.get('/logout', (req, res) => {
         if (err) {
             return console.log(err);
         }
+        res.clearCookie("username");
         res.render('Login');
         //res.redirect('/');
     });

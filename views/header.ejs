@@ -7,12 +7,16 @@
                 <a href="./">Home</a> |
                 <a href="./register" class="rl">|  Register</a> |
 
-                <% if(typeof login_ss == 'undefined' || login_ss == null ){ %>
+
+
+                <%if(locals.username ){%>
                     <a href="/login">Login</a>
+
                     <% } else{ %>
+                        <%=locals.username%>
 
-                        <a href="/logout">Logout</a>
+                            <a href="/logout">Logout</a>
 
-                        <%    } %>
+                            <%    } %>
             </nav>
         </header>
