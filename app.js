@@ -95,9 +95,8 @@ app.post("/register", async(req, res) => {
 
 // login page
 app.post('/login', async(req, res, next) => {
-    //console.log(req.body.email);
-    // const email = req.body.email;
-    // const password = req.body.password;
+    const email = req.body.email;
+    const password = req.body.password;
     const pool = new Pool(config);
     const client = await pool.connect();
     // const q = `SELECT user_id, username, email, password, salt	FROM public.users where email='${email}' `;
@@ -109,7 +108,7 @@ app.post('/login', async(req, res, next) => {
         const hashedPassword_c = hash(password + get_salt);
         //const q2 = `SELECT user_id, username, email, password, salt	 FROM public.users where email='${email}' and password='${hashedPassword_c}'`;
         //const q2 = "SELECT user_id, username, email, password, salt	 FROM public.users where email=$1 and password=$2", [email, hashedPassword_c];
-        client.query("SELECT user_id, username, email, password, salt	 FROM public.users where email=$1 and password=$2", [email, hashedPassword_c]).then(results_c => {
+        client.query("SELECT user_id, username, email, password, salt FROM public.users where email=$1 and password=$2", [email, hashedPassword_c]).then(results_c => {
             if (results_c.rowCount == '1') {
 
                 sess = req.session;
