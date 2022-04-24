@@ -1,5 +1,6 @@
 const env = process.env.NODE_ENV || "development"; // for app.js to connect to postgresQL
 const express = require("express");
+const articleRouter = require("./routes/articles");
 const app = express();
 const ejs = require("ejs");
 const PORT = 5000;
@@ -13,6 +14,7 @@ const { createHash, scryptSync, randomBytes } = require('crypto');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
 const helmet = require("helmet");
+
 // allow the app to use cookieparser
 app.use(helmet());
 
@@ -22,9 +24,11 @@ function hash(input) {
     return createHash('sha256').update(input).digest('hex');
 }
 
+//use router for articles   
+app.use("/articles", articleRouter);
+
 // static file directory
 app.use(express.static(path.join(__dirname, "public")));
-
 
 //cookie
 app.use(cookieParser());
@@ -55,7 +59,12 @@ app.set("view engine", "ejs");
 // set root page to index.ejs and pass in the title of the webpage
 app.get("/", function(req, res) {
     let title = "Blog Website";
-    res.render("index", { title: title });
+    let articles = [{
+            title: "Article 1",
+            dateCreated: "01/01/2020",
+            content: "This is the first article"
+    }]
+    res.render("index", { articles: articles, title: title });
 });
 
 // render register page
