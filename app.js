@@ -56,14 +56,18 @@ app.get('/check', (req, res) => {
 //set view engine to use ejs templates
 app.set("view engine", "ejs");
 
-// set root page to index.ejs and pass in the title of the webpage
+// set root page to index.ejs
 app.get("/", function(req, res) {
     let title = "Blog Website";
     let articles = [{
             title: "Article 1",
             dateCreated: "01/01/2020",
             content: "This is the first article"
-    }]
+    }, {
+        title: "Article 1",
+        dateCreated: "01/01/2020",
+        content: "This is the first article"
+}]
     res.render("index", { articles: articles, title: title });
 });
 
@@ -76,7 +80,6 @@ app.get("/register", function(req, res) {
 app.get("/login", function(req, res) {
     res.render("login");
 });
-
 
 
 // register user function
@@ -102,7 +105,7 @@ app.post("/register", async(req, res) => {
     }
 });
 
-// login page
+// login verification function
 app.post('/login', async(req, res, next) => {
     const email = req.body.email;
     const password = req.body.password;
@@ -143,6 +146,8 @@ app.post('/login', async(req, res, next) => {
     })
 });
 
+// Create new article function 
+
 // logout code
 app.get('/logout', (req, res) => {
     req.session.destroy((err) => {
@@ -152,7 +157,6 @@ app.get('/logout', (req, res) => {
         res.render('Login');
         //res.redirect('/');
     });
-
 });
 
 

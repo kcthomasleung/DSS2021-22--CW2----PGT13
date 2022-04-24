@@ -56,3 +56,11 @@ body {
     border-width: 5px;
     color: blue;
 }
+
+.card_body {
+    padding: 10px 0px 32px 64px;
+    border-color: rgb(0, 0, 0);
+    border-width: 2px;
+    border-style: solid;
+    margin-bottom: 10px;
+}

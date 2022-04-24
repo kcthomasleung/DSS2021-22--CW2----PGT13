@@ -1,9 +1,19 @@
 <%- include('head') %>
     <%- include('header') %>
+    <br><br><br>
 
-        <main id="blogs">
-
-            <%- include('blog') %>
+        <main id="container">
+            <a href="/articles/create" class="create_article_btn">Create Aritcle</a>
+            <br><br>
+            <% articles.forEach(article => { %> 
+                <div>
+                    <div class="card_body"> 
+                        <h4 class="card_title"><%= article.title %> </h4>
+                        <div class="card_date"><%= article.dateCreated %> </div>
+                        <div class="card_content"><%= article.content %> </div>
+                    </div>
+                </div>
+            <%}) %>
         </main>
 
         <%- include('footer') %>
