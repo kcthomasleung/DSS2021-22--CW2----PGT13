@@ -9,11 +9,11 @@
 
 
 
-                <%if(locals.username ){%>
+                <% if(!locals.log_out ){%>
                     <a href="/login">Login</a>
 
                     <% } else{ %>
-                        <%=locals.username%>
+                        <%- locals.log_out -%>
 
                             <a href="/logout">Logout</a>
 

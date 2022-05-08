@@ -33,15 +33,19 @@ app.use(cookieParser());
 app.use(bodyParser.json());
 
 // parse application/x-www-form-urlencoded
-app.use(express.json())
-app.use(express.urlencoded());
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+//app.use(express.urlencoded());
 
 // session
 app.use(session({
     secret: 'secret-key',
     resave: false,
-    saveUninitialized: false,
+    saveUninitialized: true,
+    cookie: { secure: true }
 }));
+//set view engine to use ejs templates
+app.set("view engine", "ejs");
 
 
 //cookie
@@ -49,13 +53,13 @@ app.get('/check', (req, res) => {
     res.cookie(`Cookie token name`, `encrypted cookie string Value`);
     res.send('Cookie have been saved successfully');
 });
-//set view engine to use ejs templates
-app.set("view engine", "ejs");
+
 
 // set root page to index.ejs and pass in the title of the webpage
 app.get("/", function(req, res) {
+    // console.log(sess.id);
     let title = "Blog Website";
-    const username = '';
+
     res.render("index", { title: title });
 });
 
@@ -115,14 +119,18 @@ app.post('/login', async(req, res, next) => {
             if (results_c.rowCount == '1') {
 
                 sess = req.session;
-                id = req.session.id;
-                // console.log(req.cookies);
-                //username = id;
-                //console.log(useusernamername);
-                res.cookie('username', id, { maxAge: 900000, httpOnly: true });
+                sess.id = req.session.id;
+
+
+                let session_id = res.cookie('session_id', sess.id, { maxAge: 900000, secure: true, httpOnly: true });
+                console.log(session_id.parser);
+                //localStorage.setItem('key', 'New Value');
+                // sessionStorage.getItem('seesion_id', id);
+                //localStorage.setItem('seesion_id', id);
                 //  res.cookie('pardeep', 'kjghjhv', { maxAge: 900000, httpOnly: true });
                 // res.cookie("username", username);
-                res.render('write_blog', { login_ss: 'User successfully Login ' + res.cookie.username });
+
+                return res.render('write_blog', { log_out: session_id });
 
 
             } else {
@@ -149,7 +157,10 @@ app.get('/logout', (req, res) => {
         if (err) {
             return console.log(err);
         }
-        res.clearCookie("username");
+        // console.log(session_id);
+        // console.log(session_id);
+        res.clearCookie("session_id");
+
         res.render('Login');
         //res.redirect('/');
     });
