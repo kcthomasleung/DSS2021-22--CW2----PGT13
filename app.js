@@ -7,7 +7,7 @@ const path = require("path");
 const config = require("./config.js")[env];
 const Pool = require("pg").Pool;
 const bodyParser = require("body-parser");
-const { json, jsonp } = require("express/lib/response");
+const { json, jsonp, cookie } = require("express/lib/response");
 const req = require("express/lib/request");
 const { createHash, scryptSync, randomBytes } = require('crypto');
 const session = require('express-session');
@@ -40,7 +40,7 @@ app.use(express.urlencoded({ extended: false }));
 // session
 app.use(session({
     secret: 'secret-key',
-    resave: false,
+    resave: true,
     saveUninitialized: true,
     cookie: { secure: true }
 }));
@@ -49,15 +49,41 @@ app.set("view engine", "ejs");
 
 
 //cookie
-app.get('/check', (req, res) => {
-    res.cookie(`Cookie token name`, `encrypted cookie string Value`);
-    res.send('Cookie have been saved successfully');
-});
+// app.get('/check', (req, res) => {
+//     res.cookie(`Cookie token name`, `encrypted cookie string Value`);
+//     res.send('Cookie have been saved successfully');
+// });
+login_auth = '';
 
+// const redirectLogin = (req, res, next) => {
+//     if (!req.session.id) {
+//         res.redirect('login');
+
+
+//     } else {
+
+//         next();
+//     }
+// }
+// const redirectindex = (req, res, next) => {
+//     if (req.session.id) {
+//         //console.log('jj');
+//         auth = '<a href = "/logout" > Logout </a>';
+//         // res.render('index', { login_auth: auth });
+//         // res.redirect('/');
+
+
+//     } else {
+
+//         next();
+//     }
+// }
 
 // set root page to index.ejs and pass in the title of the webpage
 app.get("/", function(req, res) {
-    // console.log(sess.id);
+    console.log(req.cookie);
+    console.log(req.session);
+
     let title = "Blog Website";
 
     res.render("index", { title: title });
@@ -65,7 +91,16 @@ app.get("/", function(req, res) {
 
 // render register page
 app.get("/register", function(req, res) {
-    res.render("register");
+    if (res.cookie.session_id1) {
+        auth = '<a href = "/logout" > Logout </a>';
+        res.render('register', { login_auth: auth });
+
+    } else {
+        auth = '<a href="/login">Login</a>';
+        res.render('register', { login_auth: auth });
+
+    }
+    // res.render("register");
 });
 
 // render login page
@@ -118,19 +153,20 @@ app.post('/login', async(req, res, next) => {
         client.query("SELECT user_id, username, email, password, salt	 FROM public.users where email=$1 and password=$2", [email, hashedPassword_c]).then(results_c => {
             if (results_c.rowCount == '1') {
 
-                sess = req.session;
+                //sess = req.session;
                 sess.id = req.session.id;
+                res.locals.id = req.session.id;
 
-
-                let session_id = res.cookie('session_id', sess.id, { maxAge: 900000, secure: true, httpOnly: true });
-                console.log(session_id.parser);
+                let session_id1 = res.cookie('session_id', sess.id, { maxAge: 900000, secure: true, httpOnly: true });
+                //  console.log(res.locals.id);
+                //  console.log(req.headers.cookie);
                 //localStorage.setItem('key', 'New Value');
                 // sessionStorage.getItem('seesion_id', id);
                 //localStorage.setItem('seesion_id', id);
                 //  res.cookie('pardeep', 'kjghjhv', { maxAge: 900000, httpOnly: true });
                 // res.cookie("username", username);
-
-                return res.render('write_blog', { log_out: session_id });
+                log_out = "<a href = '/logout' > Logout </a>";
+                return res.render('write_blog', { log_out: log_out });
 
 
             } else {
@@ -160,8 +196,9 @@ app.get('/logout', (req, res) => {
         // console.log(session_id);
         // console.log(session_id);
         res.clearCookie("session_id");
+        auth = '<a href="/login">Login</a>';
+        res.render('index', { login_auth: auth });
 
-        res.render('Login');
         //res.redirect('/');
     });
 
