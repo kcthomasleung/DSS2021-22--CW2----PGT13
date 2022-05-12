@@ -11,6 +11,7 @@ create table users (
 	salt varchar(200) not null,
 	created_at timestamp default now(),
 	twofa boolean default false,
+	verify integer, 
 	primary key (user_id)
 );
 

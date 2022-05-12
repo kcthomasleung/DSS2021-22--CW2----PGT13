@@ -1,9 +1,22 @@
 <%- include('head') %>
+<script src="../public/js/index.js" defer></script>
     <%- include('header') %>
-
-        <main id="blogs">
-
-            <%- include('blog') %>
-        </main>
+    <br><br><br>
+        <main id="container">
+            <a href="/articles/create_blog" class="create_article_btn">Create Aritcle</a>
+            <br><br>
+            <% articles.forEach(article => { %> 
+                <div>
+                    <a href="<%= article.blog %>">
+                    <div class="card_body"> 
+                       <h4 class="card_title"><%= article.title %> </h4></a>
+                        <div class="card_date"><%= article.created_at %> </div>
+                        <div class="card_content"><%= article.content %> </div>
+                    </div>
+                    </a>
+                    </main>
+                </div>
+            <%}) %>
+        </main> 
 
         <%- include('footer') %>

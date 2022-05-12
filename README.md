@@ -1,3 +1,5 @@
+# Installation
+
 To run the code please install all the required dependencies by running:
 `npm install`
 
