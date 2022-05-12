@@ -65,16 +65,20 @@ app.set("view engine", "ejs");
 // set root page to index.ejs
 app.get("/", function(req, res) {
     let title = "Blog Website";
-    let articles = [{
-            title: "Article 1",
-            dateCreated: "01/01/2020",
-            content: "This is the first article"
-    }, {
-        title: "Article 1",
-        dateCreated: "01/01/2020",
-        content: "This is the first article"
-}]
-    res.render("index", { articles: articles, title: title });
+    let articles = []
+    //fetch blogs from database
+    const client = new Pool(config);
+    client.query( "SELECT * FROM blogs ORDER BY created_at DESC")
+    .then(result => {
+        console.log(result['rows']);
+        articles = result['rows']
+        // res.render("articles/blog", {article: result.rows[0]});
+        res.render("index", { articles: articles, title: title });
+    }).catch(err => {
+        console.log(err);
+        // if error then redirect to home page
+        res.redirect("/");
+    })
 });
 
 // render register page
@@ -132,7 +136,7 @@ app.post('/login', async(req, res, next) => {
 
                 sess = req.session;
                 sess.id = req.session.id;
-                l_id=results_c.rows[0].user_id
+                l_id = results_c.rows[0].user_id
                 res.render('/', { login_ss: l_id });
 
             } else {
@@ -149,23 +153,6 @@ app.post('/login', async(req, res, next) => {
         console.log('email or username is not correct')
 
         res.render('Login', { login_ss: 'Email ID or Password is wrong' });
-    })
-});
-
-// Create new article function 
-app.post("/articles", function(req, res) {
-    const { title, content } = req.body;
-    const dateCreated = new Date();
-   // const user_id = req.session.id;
-    const client = new Pool(config);
-    client.query(
-        "INSERT INTO blog_posts (title, content, user_id, created_at) VALUES ($1, $2, $3, $4) RETURNING *",
-        [title, content, user_id, dateCreated]
-    ).then(results => {
-        res.render('write_blog', { record: "article succesfully updated::" + title });
-    }).catch(err => {
-        console.log(err);
-        res.render('write_blog', { record: "article failed to update::" + title });
     })
 });
 

@@ -1,4 +1,5 @@
 <%- include('head') %>
+<script src="../public/js/index.js" defer></script>
     <%- include('header') %>
     <br><br><br>
         <main id="container">
@@ -6,13 +7,16 @@
             <br><br>
             <% articles.forEach(article => { %> 
                 <div>
+                    <a href="<%= article.blog %>">
                     <div class="card_body"> 
-                        <h4 class="card_title"><%= article.title %> </h4>
-                        <div class="card_date"><%= article.dateCreated %> </div>
+                       <h4 class="card_title"><%= article.title %> </h4></a>
+                        <div class="card_date"><%= article.created_at %> </div>
                         <div class="card_content"><%= article.content %> </div>
                     </div>
+                    </a>
+                    </main>
                 </div>
             <%}) %>
-        </main>
+        </main> 
 
         <%- include('footer') %>
