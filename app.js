@@ -13,9 +13,11 @@ const { createHash, scryptSync, randomBytes } = require('crypto');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
 const helmet = require("helmet");
+const nodemailer = require('nodemailer');
+
 // allow the app to use cookieparser
 app.use(helmet());
-
+app.set('trust proxy', 1);
 var sess;
 // create hashing function
 function hash(input) {
@@ -39,7 +41,7 @@ app.use(express.urlencoded({ extended: false }));
 
 // session
 app.use(session({
-    secret: 'secret-key',
+    secret: 'keyboard cat',
     resave: true,
     saveUninitialized: true,
     cookie: { secure: true }
@@ -54,6 +56,23 @@ app.set("view engine", "ejs");
 //     res.send('Cookie have been saved successfully');
 // });
 login_auth = '';
+
+
+var transporter = nodemailer.createTransport({
+    host: "smtp.mailtrap.io",
+    service: 'gmail',
+    port: 2525,
+    auth: {
+        user: "fdc94e5a290f42",
+        pass: "181ce06a74345f"
+    }
+});
+var message = {
+    from: "noreplay@email.com",
+    to: "pardeep.nsr@gamil.com",
+    subject: "Subject",
+    text: "Hello SMTP Email"
+}
 
 // const redirectLogin = (req, res, next) => {
 //     if (!req.session.id) {
@@ -81,17 +100,26 @@ login_auth = '';
 
 // set root page to index.ejs and pass in the title of the webpage
 app.get("/", function(req, res) {
-    console.log(req.cookie);
-    console.log(req.session);
+    //console.log(req.cookies.session_id);
 
-    let title = "Blog Website";
+    //console.log(req.session);
+    if (req.cookies.session_id) {
+        auth = '<a href = "/logout" > Logout </a>';
+        res.render('index', { login_auth: auth });
 
-    res.render("index", { title: title });
+    } else {
+        auth = '<a href="/login">Login</a>';
+        res.render('index', { login_auth: auth });
+
+    }
+    // let title = "Blog Website";
+
+    //  res.render("index", { title: title });
 });
 
 // render register page
 app.get("/register", function(req, res) {
-    if (res.cookie.session_id1) {
+    if (req.cookies.session_id) {
         auth = '<a href = "/logout" > Logout </a>';
         res.render('register', { login_auth: auth });
 
@@ -105,7 +133,16 @@ app.get("/register", function(req, res) {
 
 // render login page
 app.get("/login", function(req, res) {
-    res.render("login");
+    if (req.cookies.session_id) {
+        auth = '<a href = "/logout" > Logout </a>';
+        res.render('write_blog', { login_auth: auth });
+
+    } else {
+        auth = '<a href="/login">Login</a>';
+        res.render('login', { login_auth: auth });
+
+    }
+    // res.render("login");
 });
 
 
@@ -152,12 +189,23 @@ app.post('/login', async(req, res, next) => {
         //const q2 = "SELECT user_id, username, email, password, salt	 FROM public.users where email=$1 and password=$2", [email, hashedPassword_c];
         client.query("SELECT user_id, username, email, password, salt	 FROM public.users where email=$1 and password=$2", [email, hashedPassword_c]).then(results_c => {
             if (results_c.rowCount == '1') {
-
-                //sess = req.session;
+                var write_user_id = results_c.rows[0].user_id;
+                // secure_user_write_id = hash(results_c.rows[0].user_id);
+                // console.log(secure_user_write_id);
+                sess = req.session;
                 sess.id = req.session.id;
                 res.locals.id = req.session.id;
 
+                transporter.sendMail(message, function(err, info) {
+                    if (err) {
+                        console.log(err)
+                    } else {
+                        console.log(info);
+                    }
+                });
+
                 let session_id1 = res.cookie('session_id', sess.id, { maxAge: 900000, secure: true, httpOnly: true });
+                let write_id = res.cookie('write_id', write_user_id, { maxAge: 900000, secure: true, httpOnly: true });
                 //  console.log(res.locals.id);
                 //  console.log(req.headers.cookie);
                 //localStorage.setItem('key', 'New Value');
@@ -196,6 +244,8 @@ app.get('/logout', (req, res) => {
         // console.log(session_id);
         // console.log(session_id);
         res.clearCookie("session_id");
+        res.clearCookie("write_id");
+
         auth = '<a href="/login">Login</a>';
         res.render('index', { login_auth: auth });
 
