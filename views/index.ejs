@@ -3,11 +3,11 @@
     <%- include('header') %>
     <br><br><br>
         <main id="container">
-            <a href="/articles/create_blog" class="create_article_btn">Create Aritcle</a>
+            <a href="/create_blog" class="create_article_btn">Create Aritcle</a>
             <br><br>
             <% articles.forEach(article => { %> 
                 <div>
-                    <a href="<%= article.blog %>">
+                    <a href="/blog/<%= article.blog_id %>">
                     <div class="card_body"> 
                        <h4 class="card_title"><%= article.title %> </h4></a>
                         <div class="card_date"><%= article.created_at %> </div>

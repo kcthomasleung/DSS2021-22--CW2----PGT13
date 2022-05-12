@@ -1,6 +1,5 @@
 const env = process.env.NODE_ENV || "development"; // for app.js to connect to postgresQL
 const express = require("express");
-const articleRouter = require("./routes/articles");
 const app = express();
 const ejs = require("ejs");
 const PORT = 5000;
@@ -36,7 +35,7 @@ app.use(express.json())
 app.use(express.urlencoded());
 
 //use router for articles   
-app.use("/articles", articleRouter);
+// app.use("/articles", articleRouter);
 
 // static file directory
 app.use(express.static(path.join(__dirname, "public")));
@@ -62,16 +61,9 @@ app.use(session({
 //set view engine to use ejs templates
 app.set("view engine", "ejs");
 
-
-//cookie
-// app.get('/check', (req, res) => {
-//     res.cookie(`Cookie token name`, `encrypted cookie string Value`);
-//     res.send('Cookie have been saved successfully');
-// });
 login_auth = '';
 msg = '';
 verified = '';
-// articles = [];
 var transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
     port: 465,
@@ -85,31 +77,6 @@ var transporter = nodemailer.createTransport({
     }
 });
 
-
-// const redirectLogin = (req, res, next) => {
-//     if (!req.session.id) {
-//         res.redirect('login');
-
-
-//     } else {
-
-//         next();
-//     }
-// }
-// const redirectindex = (req, res, next) => {
-//     if (req.session.id) {
-//         //console.log('jj');
-//         auth = '<a href = "/logout" > Logout </a>';
-//         // res.render('index', { login_auth: auth });
-//         // res.redirect('/');
-
-
-//     } else {
-
-//         next();
-//     }
-// }
-
 // set root page to index.ejs
 app.get("/", function(req, res) {
     let title = "Blog Website";
@@ -121,7 +88,6 @@ app.get("/", function(req, res) {
         const client = new Pool(config);
         client.query( "SELECT * FROM blogs ORDER BY created_at DESC")
         .then(result => {
-            console.log(result['rows']);
             articles = result['rows']
             res.render("index", { articles: articles, title: title, login_auth: auth });
         }).catch(err => {
@@ -135,7 +101,6 @@ app.get("/", function(req, res) {
         const client = new Pool(config);
         client.query( "SELECT * FROM blogs ORDER BY created_at DESC")
         .then(result => {
-            console.log(result['rows']);
             articles = result['rows']
             res.render("index", { articles: articles, title: title, login_auth: auth });
         }).catch(err => {
@@ -335,10 +300,49 @@ app.get('/logout', (req, res) => {
             auth = '<a href="/login">Login</a>';
             // res.render('index', { login_auth: auth });
             res.redirect('/');
-
         }
     });
 });
+
+
+//articles section
+app.get('/create_blog', (req, res) => {
+    res.render('create_blog');
+})
+
+// render article page
+app.get('/blog/:id', function(req, res) {
+    console.log(req.params.id);
+    const client = new Pool(config);
+    client.query( "SELECT * FROM blogs WHERE blog_id = $1", [req.params.id])
+    .then(result => {
+        console.log('asdfag')
+        res.render('blog', {article: result.rows[0]});
+    }).catch(err => {
+        console.log(err);
+        // if error then redirect to home page
+        res.redirect('/');
+    })
+})
+
+app.post('/new_blog', async (req, res) => {
+    const { title, content } = req.body;
+    const dateCreated = new Date();
+
+    const user_id = 7
+    const client = new Pool(config);
+     client.query(
+       "INSERT INTO blogs (title, content, user_id, created_at) VALUES ($1, $2, $3, $4) RETURNING *",
+        [title, content, user_id, dateCreated]
+     ).then(results => {
+        const blog_id = results.rows[0].blog_id;
+        res.render('blog', {blog_id:blog_id});
+    //     res.redirect(`/:${blog_id}`, { record: "article succesfully updated::" + title });
+    // }).catch(err => {
+    //     console.log(err);
+    //    // res.render('create_blog', { record: "article failed to update::" + title });
+})
+})
 
 
 app.listen(PORT, () => {
