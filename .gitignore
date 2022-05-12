@@ -1,5 +1,7 @@
 /.vscode*
 config.js
 .DS_Store
+workspace.code-workspace
+
 # Dependency directories
 node_modules/

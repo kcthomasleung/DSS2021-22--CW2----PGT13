@@ -1,5 +1,6 @@
 const env = process.env.NODE_ENV || "development"; // for app.js to connect to postgresQL
 const express = require("express");
+const articleRouter = require("./routes/articles");
 const app = express();
 const ejs = require("ejs");
 const PORT = 5000;
@@ -24,14 +25,21 @@ const cryptr = new Cryptr('myTotallySecretKey');
 app.use(helmet());
 app.set('trust proxy', 1);
 var sess;
+
 // create hashing function
 function hash(input) {
     return createHash('sha256').update(input).digest('hex');
 }
 
+// parse application/x-www-form-urlencoded
+app.use(express.json())
+app.use(express.urlencoded());
+
+//use router for articles   
+app.use("/articles", articleRouter);
+
 // static file directory
 app.use(express.static(path.join(__dirname, "public")));
-
 
 //cookie
 app.use(cookieParser());
@@ -63,7 +71,7 @@ app.set("view engine", "ejs");
 login_auth = '';
 msg = '';
 verified = '';
-
+// articles = [];
 var transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
     port: 465,
@@ -102,23 +110,40 @@ var transporter = nodemailer.createTransport({
 //     }
 // }
 
-// set root page to index.ejs and pass in the title of the webpage
+// set root page to index.ejs
 app.get("/", function(req, res) {
-    //console.log(req.cookies.session_id);
-
-    //console.log(req.session);
+    let title = "Blog Website";
+    let articles = [];
     if (req.cookies.session_id) {
         auth = '<a href = "/logout" > Logout </a>';
-        res.render('index', { login_auth: auth });
 
+        //fetch blogs from database
+        const client = new Pool(config);
+        client.query( "SELECT * FROM blogs ORDER BY created_at DESC")
+        .then(result => {
+            console.log(result['rows']);
+            articles = result['rows']
+            res.render("index", { articles: articles, title: title, login_auth: auth });
+        }).catch(err => {
+            console.log(err);
+            // if error then redirect to home page
+            res.redirect("/");
+        })
     } else {
         auth = '<a href="/login">Login</a>';
-        res.render('index', { login_auth: auth });
-
+        //fetch blogs from database
+        const client = new Pool(config);
+        client.query( "SELECT * FROM blogs ORDER BY created_at DESC")
+        .then(result => {
+            console.log(result['rows']);
+            articles = result['rows']
+            res.render("index", { articles: articles, title: title, login_auth: auth });
+        }).catch(err => {
+            console.log(err);
+            // if error then redirect to home page
+            res.redirect("/");
+        })
     }
-    // let title = "Blog Website";
-
-    //  res.render("index", { title: title });
 });
 
 // render register page
@@ -151,26 +176,22 @@ app.get("/verified", function(req, res) {
 app.get("/login", function(req, res) {
     if (req.cookies.session_id) {
         auth = '<a href = "/logout" > Logout </a>';
-        res.render('write_blog', { login_auth: auth });
+        res.render('/', { login_auth: auth });
 
     } else {
         auth = '<a href="/login">Login</a>';
         res.render('login', { login_auth: auth });
-
     }
     // res.render("login");
 });
 
 app.post("/verified", async(req, res, next) => {
     const { verified, hid } = req.body;
-    console.log(req.body.verified);
-    console.log(req.body.hid);
     const pool = new Pool(config);
     const client = await pool.connect();
     //  gg = `SELECT * FROM public.users where user_id='${hid}' and verify='${verified}'`;
     await client.query("SELECT * FROM public.users where user_id=$1 and verify=$2", [hid, verified]).then(verified_login => {
         client.release();
-        //console.log(verified_login);
         if (verified_login.rowCount == '1') {
 
             sess = req.session;
@@ -180,23 +201,15 @@ app.post("/verified", async(req, res, next) => {
             //const decryptedString = cryptr.decrypt(encryptedString);
             let session_id1 = res.cookie('session_id', sess.id, { maxAge: 900000, secure: true, httpOnly: true });
             let write_id = res.cookie('user_id', encryptedString, { maxAge: 900000, secure: true, httpOnly: true });
-            log_out = "<a href = '/logout' > Logout </a>";
-            return res.render('write_blog', { log_out: log_out });
+            res.redirect('/');
         } else {
 
             var record1 = { 'msg': 'Please Enter Right code', 'hid': req.body.hid };
             return res.render('verified', { msg: record1 });
-
         }
-
-
-
     });
-
-
-
-
 });
+
 
 // register user function
 app.post("/register", async(req, res) => {
@@ -207,9 +220,11 @@ app.post("/register", async(req, res) => {
     // insert user into database
     try {
         const client = new Pool(config);
-        const result = await client.query("INSERT INTO users (username, email, password, salt, twofa) VALUES ($1, $2, $3, $4, $5) RETURNING *", [username, email, hashedPassword, salt, twofa]);
-        // var f = "user succesfully updated" + req.body.email;
-        //console.log(f);
+        const result = await client.query(
+            "INSERT INTO users (username, email, password, salt, twofa) VALUES ($1, $2, $3, $4, $5) RETURNING *", 
+            [username, email, hashedPassword, salt, twofa]
+        );
+
         res.render('register', { record: "user succesfully updated::" + email });
         // res.redirect("/login");
     } catch (err) {
@@ -219,9 +234,8 @@ app.post("/register", async(req, res) => {
     }
 });
 
-// login page
+// login verification function
 app.post('/login', async(req, res, next) => {
-    //console.log(req.body.email);
     const email = req.body.email;
     const password = req.body.password;
     const pool = new Pool(config);
@@ -232,7 +246,6 @@ app.post('/login', async(req, res, next) => {
     await client.query("SELECT user_id, username, email, password, salt	FROM public.users where email=$1", [email]).then(results => {
         // client.release();
         const get_salt = results.rows[0].salt;
-
         const hashedPassword_c = hash(password + get_salt);
         //const q2 = `SELECT user_id, username, email, password, salt	 FROM public.users where email='${email}' and password='${hashedPassword_c}'`;
         //const q2 = "SELECT user_id, username, email, password, salt	 FROM public.users where email=$1 and password=$2", [email, hashedPassword_c];
@@ -292,20 +305,11 @@ app.post('/login', async(req, res, next) => {
                     //  res.cookie('pardeep', 'kjghjhv', { maxAge: 900000, httpOnly: true });
                     // res.cookie("username", username);
                     log_out = "<a href = '/logout' > Logout </a>";
-                    return res.render('write_blog', { log_out: log_out });
-
-
+                    return res.render('index', { log_out: log_out });
                 }
-
-
-
-
             } else {
-
                 res.render('Login', { login_ss: 'Email ID or Password is wrong' });
             }
-
-
         });
 
         //console.log(get_salt);
@@ -316,28 +320,25 @@ app.post('/login', async(req, res, next) => {
 
         res.render('Login', { login_ss: 'Email ID or Password is wrong' });
     })
-
 });
+
 
 // logout code
 app.get('/logout', (req, res) => {
     req.session.destroy((err) => {
         if (err) {
             return console.log(err);
+        }else{
+            res.clearCookie("session_id");
+            res.clearCookie("user_id");
+
+            auth = '<a href="/login">Login</a>';
+            // res.render('index', { login_auth: auth });
+            res.redirect('/');
+
         }
-        // console.log(session_id);
-        // console.log(session_id);
-        res.clearCookie("session_id");
-        res.clearCookie("user_id");
-
-        auth = '<a href="/login">Login</a>';
-        res.render('index', { login_auth: auth });
-
-        //res.redirect('/');
     });
-
 });
-
 
 
 app.listen(PORT, () => {
