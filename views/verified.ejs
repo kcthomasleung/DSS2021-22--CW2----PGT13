@@ -1,0 +1,23 @@
+<%- include('head') %>
+    <%- include('header') %>
+
+        <main id="blogs">
+            <%- msg.msg -%>
+                <table class="register_table">
+                    <form id="register_form" action="verified" method="post" enctype="text/html">
+                        <tr>
+                            <td> <label for="email">Please Enter Four digit code </label></td>
+                            <td>
+                                <input type="text" id="verified" name="verified" placeholder="verified" required>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><input type="hidden" id="hid" name="hid" value="<% if(verified){ %> <%- verified -%> <% }else { %> <%- msg.hid -%> <% } %>" placeholder="verified" required style="width:90px"> </td>
+                            <td>
+                                <input type="submit" id="submit" name="" value="Login" placeholder="verified" required style="width:90px">
+                            </td>
+                        </tr>
+                    </form>
+                </table>
+
+                <%- include('footer') %>
