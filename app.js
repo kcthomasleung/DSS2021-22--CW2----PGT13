@@ -86,28 +86,28 @@ app.get("/", function(req, res) {
 
         //fetch blogs from database
         const client = new Pool(config);
-        client.query( "SELECT * FROM blogs ORDER BY created_at DESC")
-        .then(result => {
-            articles = result['rows']
-            res.render("index", { articles: articles, title: title, login_auth: auth });
-        }).catch(err => {
-            console.log(err);
-            // if error then redirect to home page
-            res.redirect("/");
-        })
+        client.query("SELECT * FROM blogs ORDER BY created_at DESC")
+            .then(result => {
+                articles = result['rows']
+                res.render("index", { articles: articles, title: title, login_auth: auth });
+            }).catch(err => {
+                console.log(err);
+                // if error then redirect to home page
+                res.redirect("/");
+            })
     } else {
         auth = '<a href="/login">Login</a>';
         //fetch blogs from database
         const client = new Pool(config);
-        client.query( "SELECT * FROM blogs ORDER BY created_at DESC")
-        .then(result => {
-            articles = result['rows']
-            res.render("index", { articles: articles, title: title, login_auth: auth });
-        }).catch(err => {
-            console.log(err);
-            // if error then redirect to home page
-            res.redirect("/");
-        })
+        client.query("SELECT * FROM blogs ORDER BY created_at DESC")
+            .then(result => {
+                articles = result['rows']
+                res.render("index", { articles: articles, title: title, login_auth: auth });
+            }).catch(err => {
+                console.log(err);
+                // if error then redirect to home page
+                res.redirect("/");
+            })
     }
 });
 
@@ -186,8 +186,7 @@ app.post("/register", async(req, res) => {
     try {
         const client = new Pool(config);
         const result = await client.query(
-            "INSERT INTO users (username, email, password, salt, twofa) VALUES ($1, $2, $3, $4, $5) RETURNING *", 
-            [username, email, hashedPassword, salt, twofa]
+            "INSERT INTO users (username, email, password, salt, twofa) VALUES ($1, $2, $3, $4, $5) RETURNING *", [username, email, hashedPassword, salt, twofa]
         );
 
         res.render('register', { record: "user succesfully updated::" + email });
@@ -293,7 +292,7 @@ app.get('/logout', (req, res) => {
     req.session.destroy((err) => {
         if (err) {
             return console.log(err);
-        }else{
+        } else {
             res.clearCookie("session_id");
             res.clearCookie("user_id");
 
@@ -314,34 +313,33 @@ app.get('/create_blog', (req, res) => {
 app.get('/blog/:id', function(req, res) {
     console.log(req.params.id);
     const client = new Pool(config);
-    client.query( "SELECT * FROM blogs WHERE blog_id = $1", [req.params.id])
-    .then(result => {
-        console.log('asdfag')
-        res.render('blog', {article: result.rows[0]});
-    }).catch(err => {
-        console.log(err);
-        // if error then redirect to home page
-        res.redirect('/');
-    })
+    client.query("SELECT * FROM blogs WHERE blog_id = $1", [req.params.id])
+        .then(result => {
+            console.log('asdfag')
+            res.render('blog', { article: result.rows[0] });
+        }).catch(err => {
+            console.log(err);
+            // if error then redirect to home page
+            res.redirect('/');
+        })
 })
 
-app.post('/new_blog', async (req, res) => {
+app.post('/new_blog', async(req, res) => {
     const { title, content } = req.body;
     const dateCreated = new Date();
 
-    const user_id = 7
+    const user_id = 1
     const client = new Pool(config);
-     client.query(
-       "INSERT INTO blogs (title, content, user_id, created_at) VALUES ($1, $2, $3, $4) RETURNING *",
-        [title, content, user_id, dateCreated]
-     ).then(results => {
+    client.query(
+        "INSERT INTO blogs (title, content, user_id, created_at) VALUES ($1, $2, $3, $4) RETURNING *", [title, content, user_id, dateCreated]
+    ).then(results => {
         const blog_id = results.rows[0].blog_id;
-        res.render('blog', {blog_id:blog_id});
-    //     res.redirect(`/:${blog_id}`, { record: "article succesfully updated::" + title });
-    // }).catch(err => {
-    //     console.log(err);
-    //    // res.render('create_blog', { record: "article failed to update::" + title });
-})
+        res.render('blog', { blog_id: blog_id });
+        //     res.redirect(`/:${blog_id}`, { record: "article succesfully updated::" + title });
+        // }).catch(err => {
+        //     console.log(err);
+        //    // res.render('create_blog', { record: "article failed to update::" + title });
+    })
 })
 
 
