@@ -10,6 +10,7 @@ const bodyParser = require("body-parser");
 const { json, jsonp, cookie } = require("express/lib/response");
 const req = require("express/lib/request");
 const { createHash, scryptSync, randomBytes } = require('crypto');
+<<<<<<< Updated upstream
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
 const helmet = require("helmet");
@@ -24,6 +25,8 @@ const cryptr = new Cryptr('myTotallySecretKey');
 app.use(helmet());
 app.set('trust proxy', 1);
 var sess;
+=======
+>>>>>>> Stashed changes
 
 // create hashing function
 function hash(input) {
@@ -61,6 +64,7 @@ app.use(session({
 //set view engine to use ejs templates
 app.set("view engine", "ejs");
 
+<<<<<<< Updated upstream
 login_auth = '';
 msg = '';
 verified = '';
@@ -109,10 +113,17 @@ app.get("/", function(req, res) {
                 res.redirect("/");
             })
     }
+=======
+// set root page to index.ejs and pass in the title of the webpage
+app.get("/", function(req, res) {
+    let title = "Blog Website";
+    res.render("index", { title: title });
+>>>>>>> Stashed changes
 });
 
 // render register page
 app.get("/register", function(req, res) {
+<<<<<<< Updated upstream
     if (req.cookies.session_id) {
         auth = '<a href = "/logout" > Logout </a>';
         res.render('register', { login_auth: auth });
@@ -135,10 +146,14 @@ app.get("/verified", function(req, res) {
 
     }
     // res.render("register");
+=======
+    res.render("register");
+>>>>>>> Stashed changes
 });
 
 // render login page
 app.get("/login", function(req, res) {
+<<<<<<< Updated upstream
     if (req.cookies.session_id) {
         auth = '<a href = "/logout" > Logout </a>';
         res.render('/', { login_auth: auth });
@@ -148,6 +163,9 @@ app.get("/login", function(req, res) {
         res.render('login', { login_auth: auth });
     }
     // res.render("login");
+=======
+    res.render("login");
+>>>>>>> Stashed changes
 });
 
 app.post("/verified", async(req, res, next) => {
@@ -178,7 +196,11 @@ app.post("/verified", async(req, res, next) => {
 
 // register user function
 app.post("/register", async(req, res) => {
+<<<<<<< Updated upstream
     const { username, email, password, twofa } = req.body;
+=======
+    const { username, email, password } = req.body;
+>>>>>>> Stashed changes
     const salt = randomBytes(16).toString('hex');
     const hashedPassword = hash(password + salt);
 
@@ -186,6 +208,7 @@ app.post("/register", async(req, res) => {
     try {
         const client = new Pool(config);
         const result = await client.query(
+<<<<<<< Updated upstream
             "INSERT INTO users (username, email, password, salt, twofa) VALUES ($1, $2, $3, $4, $5) RETURNING *", [username, email, hashedPassword, salt, twofa]
         );
 
@@ -195,6 +218,18 @@ app.post("/register", async(req, res) => {
         console.log(err);
         res.render('register', { record: "Email or username already exists, please try loggin in" });
         // res.send("Email or username already exists, please try loggin in.");
+=======
+            "INSERT INTO users (username, email, password, salt) VALUES ($1, $2, $3, $4) RETURNING *", [username, email, hashedPassword, salt]
+        );
+
+        res.redirect("/login");
+    } catch (err) {
+        console.log(err);
+        res.send("Email or username already exists, please try loggin in.");
+        setTimeout(() => {
+            res.redirect('/login');
+        }, 2000)
+>>>>>>> Stashed changes
     }
 });
 
@@ -211,9 +246,16 @@ app.post('/login', async(req, res, next) => {
         // client.release();
         const get_salt = results.rows[0].salt;
         const hashedPassword_c = hash(password + get_salt);
+<<<<<<< Updated upstream
         //const q2 = `SELECT user_id, username, email, password, salt	 FROM public.users where email='${email}' and password='${hashedPassword_c}'`;
         //const q2 = "SELECT user_id, username, email, password, salt	 FROM public.users where email=$1 and password=$2", [email, hashedPassword_c];
         client.query("SELECT user_id, username, email, password, salt, twofa	 FROM public.users where email=$1 and password=$2", [email, hashedPassword_c]).then(results_c => {
+=======
+
+        //  p="SELECT user_id, username, email, password, salt FROM public.users where email= and password=$2", [req.body.email, hashedPassword_c];
+        // console.log(p);
+        client.query("SELECT user_id, username, email, password, salt FROM public.users where email=$1 and password=$2", [req.body.email, hashedPassword_c]).then(results_c => {
+>>>>>>> Stashed changes
             if (results_c.rowCount == '1') {
                 // console.log(results_c.rows[0]);
                 var write_user_id = results_c.rows[0].user_id;
