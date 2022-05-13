@@ -302,10 +302,10 @@ app.get('/logout', (req, res) => {
             res.redirect('/');
         }
     });
-});
+});   
 
 
-//articles section
+//articles section ggggg
 app.get('/create_blog', (req, res) => {
     res.render('create_blog');
 })
