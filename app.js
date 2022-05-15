@@ -495,11 +495,11 @@ app.post('/search', async(req, res, next) => {
     client.query("SELECT * FROM blogs WHERE title like $1", [req.body.search_key])
         .then(result => {
             if (req.cookies.user_id) {
-                auth = '<a href = "/logout" > Logout </a>';
+                auth = '<a href = "/login" > Login </a>';
                 res.render("blog", { article: result.rows[0], login_auth: auth });
             } else {
+                auth = '<a href = "/logout" > Logout </a>';
 
-                auth = '<a href = "/login" > Login </a>';
                 res.render("blog", { article: result.rows[0], login_auth: auth });
 
             }
