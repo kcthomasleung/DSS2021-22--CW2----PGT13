@@ -19,21 +19,3 @@ function validate_password() {
 }
 
 document.getElementById('password_confirm').addEventListener('keyup', validate_password);
-
-
-const button = document.getElementById('search');
-button.addEventListener('keyup', function(e) {
-    console.log('button was clicked');
-
-    fetch('/clicked', { method: 'POST' })
-        .then(function(response) {
-            if (response.ok) {
-                console.log('Click was recorded');
-                return;
-            }
-            throw new Error('Request failed.');
-        })
-        .catch(function(error) {
-            console.log(error);
-        });
-});

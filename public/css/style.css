@@ -116,14 +116,19 @@ a:active {
     box-sizing: border-box;
 }
 
-.sr1 {
+form.example input[type=text] {
     padding: 7px;
     font-size: 10px;
     border: 1px solid grey;
     float: left;
     width: 130%;
     background: #f1f1f1;
-    margin: -17px 0px 0px 64px;
+    margin: -17px 0px 0px 60px;
+}
+
+h1 {
+    font-size: 20px;
+    padding: 37px 0px 0px 0px;
 }
 
 header a {
@@ -132,31 +137,28 @@ header a {
 
 #search {
     position: absolute;
-    margin: -17px 1px 1px 1px;
-    font-size: 10px;
-    border: 1px solid grey;
-    padding: 7px;
+    margin: -14px 1px 1px 1px;
 }
 
-div.example button {
+#search {
     height: 27px;
     position: absolute;
     float: left;
     width: 30%;
-    padding: 12px;
-    background: hsl(207, 79%, 23%);
-    color: white;
-    font-size: 17px;
+    /* padding: 12px; */
+    /* background: hsl(207, 79%, 23%); */
+    /* color: white; */
+    font-size: 13px;
     border: 1px solid grey;
     border-left: none;
-    margin: -17px 1px 1px 3px;
+    margin: -17px 1px 0px 1px;
 }
 
-div.example button:hover {
+form.example button:hover {
     background: #0b7dda;
 }
 
-.sr1::after {
+form.example::after {
     content: "";
     clear: both;
     display: table;

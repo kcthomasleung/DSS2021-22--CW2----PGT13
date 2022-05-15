@@ -327,7 +327,7 @@ app.get('/logout', (req, res) => {
             res.redirect('/');
         }
     });
-});   
+});
 
 
 //articles section ggggg
@@ -489,7 +489,24 @@ app.post('/new_blog', async(req, res, next) => {
 
 
 })
+app.post('/search', async(req, res, next) => {
 
+    const client = new Pool(config);
+    client.query("SELECT * FROM blogs WHERE title like $1", [req.body.search_key])
+        .then(result => {
+            if (req.cookies.user_id) {
+                auth = '<a href = "/logout" > Logout </a>';
+                res.render("blog", { article: result.rows[0], login_auth: auth });
+            } else {
+
+                auth = '<a href = "/login" > Login </a>';
+                res.render("blog", { article: result.rows[0], login_auth: auth });
+
+            }
+        });
+
+
+});
 
 app.listen(PORT, () => {
     console.log(`Server running on port: http://localhost:${PORT}`);
