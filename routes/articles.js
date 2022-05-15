@@ -34,7 +34,6 @@ router.post('/new_blog', async (req, res) => {
         "INSERT INTO blogs (title, content, user_id, created_at) VALUES ($1, $2, $3, $4) RETURNING *",
         [title, content, user_id, dateCreated]
     ).then(results => {
-        console.log(results.rows[0].blog_id);
         const blog_id = results.rows[0].blog_id
         res.render(`articles/:${blog_id}`, { record: "article succesfully updated::" + title });
     }).catch(err => {

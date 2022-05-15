@@ -1,22 +1,35 @@
 <%- include('head') %>
-<script src="../public/js/index.js" defer></script>
+    <script src="../public/js/index.js" defer></script>
     <%- include('header') %>
-    <br><br><br>
+        <br><br><br>
+        <label class="display_msg"><%- msg %></label>
         <main id="container">
-            <a href="/articles/create_blog" class="create_article_btn">Create Aritcle</a>
+            <a href="/create_blog" class="create_article_btn"><u>Create Aritcle</u></a>
             <br><br>
-            <% articles.forEach(article => { %> 
-                <div>
-                    <a href="<%= article.blog %>">
-                    <div class="card_body"> 
-                       <h4 class="card_title"><%= article.title %> </h4></a>
-                        <div class="card_date"><%= article.created_at %> </div>
-                        <div class="card_content"><%= article.content %> </div>
-                    </div>
-                    </a>
-                    </main>
-                </div>
-            <%}) %>
-        </main> 
+            <% articles.forEach(article => { %>
 
-        <%- include('footer') %>
+                <%  if(session_id =='1' && uid==article.user_id){ %>
+                    <div style="position: absolute;margin: 3px 0px 0px 449px;font-size: 13px;"> <a href="/edit_blog/<%= article.blog_id %>" style="color:brown">Edit</a>&nbsp;&nbsp;&nbsp;<a href="/delete/<%= article.blog_id %>" style="color:red">Delet</a></div>
+                    <% } %>
+                        <a href="/blog/<%= article.blog_id %>">
+
+                            <div class="card_body">
+                                <h4 class="card_title">
+                                    <%= article.title %>
+                                </h4>
+                        </a>
+                        <div class="card_date" data-config="{ 'type': 'table', 'limit': 140, 'number': true, 'more': '&#8594; show more', 'less': '&#8592; less' }">
+                            <%= article.created_at %>
+                        </div>
+                        <div class="card_content">
+                            <%= article.content %>
+                        </div>
+                        </div>
+                        </a>
+        </main>
+
+
+        <% }) %>
+
+
+            <%- include('footer') %>

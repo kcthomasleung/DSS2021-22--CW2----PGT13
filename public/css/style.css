@@ -3,6 +3,22 @@
     margin: auto;
 }
 
+.hidden {
+    display: none
+}
+
+.show-more,
+.show-less {
+    cursor: pointer;
+    color: #222;
+}
+
+.display_msg {
+    position: absolute;
+    margin: -43px 0px 0px 183px;
+    color: red;
+}
+
 .rl {
     margin-left: 330px;
 }
@@ -63,4 +79,89 @@ body {
     border-width: 2px;
     border-style: solid;
     margin-bottom: 10px;
+}
+
+.show {
+    text-align: left;
+}
+
+.card_date {
+    position: absolute;
+    font-size: 9px;
+    margin: -48px 4px 6px 315px;
+    width: 150px;
+}
+
+a:link {
+    color: black;
+    text-decoration: none;
+}
+
+a:visited {
+    color: black;
+    text-decoration: none;
+}
+
+a:hover {
+    color: green;
+    text-decoration: none;
+}
+
+a:active {
+    color: green;
+    text-decoration: none;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+.sr1 {
+    padding: 7px;
+    font-size: 10px;
+    border: 1px solid grey;
+    float: left;
+    width: 130%;
+    background: #f1f1f1;
+    margin: -17px 0px 0px 64px;
+}
+
+header a {
+    width: auto;
+}
+
+#search {
+    position: absolute;
+    margin: -17px 1px 1px 1px;
+    font-size: 10px;
+    border: 1px solid grey;
+    padding: 7px;
+}
+
+div.example button {
+    height: 27px;
+    position: absolute;
+    float: left;
+    width: 30%;
+    padding: 12px;
+    background: hsl(207, 79%, 23%);
+    color: white;
+    font-size: 17px;
+    border: 1px solid grey;
+    border-left: none;
+    margin: -17px 1px 1px 3px;
+}
+
+div.example button:hover {
+    background: #0b7dda;
+}
+
+.sr1::after {
+    content: "";
+    clear: both;
+    display: table;
+}
+
+.navbar {
+    float: left;
 }

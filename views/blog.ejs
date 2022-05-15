@@ -1,40 +1,38 @@
-<div id="blogs">
-    <table>
-        <tr>
-            <td>Title:</td>
-            <td>
-                <p>
-                    Database
-                </p>
-            </td>
-        </tr>
-        <tr>
-            <td></td>
-            <td class="bt">“At Medium we were able to transition our product planning to Airtable in 1 day - we use it for all major projects and were able to create the exact workflow and visibility we needed across the team.”</td>
-        </tr>
-        <td>Title:</td>
-        <td>
-            <p>
-                Database
-            </p>
-        </td>
-        </tr>
-        <tr>
-            <td></td>
-            <td class="bt">“At Medium we were able to transition our product planning to Airtable in 1 day - we use it for all major projects and were able to create the exact workflow and visibility we needed across the team.”</td>
-        </tr>
-        <td>Title:</td>
-        <td>
-            <p>
-                Database
-            </p>
-        </td>
-        </tr>
-        <tr>
-            <td></td>
-            <td class="bt">“At Medium we were able to transition our product planning to Airtable in 1 day - we use it for all major projects and were able to create the exact workflow and visibility we needed across the team.”</td>
-        </tr>
-    </table>
+<%- include('./head') %>
+    <%- include('./header') %>
+        <div style="text-align: center;">
+            <h1>Article </h1>
+            <table style="width: 465px;            height: 148px;">
+                <tr>
+                    <td>Title:</td>
+                    <td class="show">
+                        <% if (article.title){ %>
+                            <%= article.title %>
+                                <% }else { %>
+                                    <%- title %>
+                                        <% } %>
+                    </td>
 
-</div>
+                </tr>
+                <tr>
+                    <td>Content:</td>
+                    <td class="show">
+                        <% if (article.content){ %>
+                            <%= article.content %>
+                                <% }else { %>
+                                    <%- content %>
+                                        <% }  %>
 
+                    </td>
+
+                </tr>
+
+            </table>
+            <h1>
+
+            </h1><br>
+            <p style="    text-align: justify;">
+
+            </p>
+        </div>
+        <%- include('./footer') %>
