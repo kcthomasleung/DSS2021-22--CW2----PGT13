@@ -327,7 +327,7 @@ app.get('/logout', (req, res) => {
             res.redirect('/');
         }
     });
-});
+});   
 
 
 //articles section ggggg
