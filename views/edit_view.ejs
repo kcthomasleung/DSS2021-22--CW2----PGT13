@@ -1,0 +1,20 @@
+<%- include('head') %>
+    <%- include('header') %>
+        <h1>Edit Article</h1>
+
+        <form action="/edit_blog/update" method="post" style="text-align: center;">
+            <table>
+                <div class="form_group">
+                    Title:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</title> <input type="text" name="title" value="<%- title   %>" placeholder="Title" required><br><br>
+                    <label style="position:absolute">Content:</label> <textarea name="content" placeholder="Content" required style="height: 200px;margin: 0px 0px 0px 67px;
+                     width: 176px;"><%- content %></textarea><br><br>
+                </div>
+                <div style="margin: 1px 1px 1px 52px;"><a href="/">Cancel</a>&nbsp;&nbsp;&nbsp;
+                    <input type="submit" value="Update"><br><br></div>
+            </table>
+
+            <input type="hidden" value="<%- user_id %>" name="user_id" id "user_id">
+            <input type="hidden" value="<%- blog_id %>" name="blog_id" id "blog_id">
+
+        </form>
+        <%- include('footer') %>

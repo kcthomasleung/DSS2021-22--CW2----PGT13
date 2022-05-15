@@ -6,7 +6,10 @@
             <nav class="navbar">
                 <a href="/">Home</a> |
                 <a href="/register" class="rl">|  Register</a> |
-
+                <form class="example" action="/search" style="position: absolute;">
+                    <input type="text" placeholder="Search.." name="search">
+                    <input type="submit" value="search" id="search"><i class="fa fa-search"></i>
+                </form>
                 <% if(login_auth) {%>
                     <%- login_auth -%>
                         <% }else{ %>

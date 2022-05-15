@@ -25,6 +25,7 @@ app.use(helmet());
 app.set('trust proxy', 1);
 var sess;
 
+
 // create hashing function
 function hash(input) {
     return createHash('sha256').update(input).digest('hex');
@@ -64,6 +65,7 @@ app.set("view engine", "ejs");
 login_auth = '';
 msg = '';
 verified = '';
+article = '';
 var transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
     port: 465,
@@ -82,32 +84,33 @@ app.get("/", function(req, res) {
     let title = "Blog Website";
     let articles = [];
     if (req.cookies.session_id) {
+        const decryptedString = cryptr.decrypt(req.cookies.user_id);
         auth = '<a href = "/logout" > Logout </a>';
 
         //fetch blogs from database
         const client = new Pool(config);
-        client.query( "SELECT * FROM blogs ORDER BY created_at DESC")
-        .then(result => {
-            articles = result['rows']
-            res.render("index", { articles: articles, title: title, login_auth: auth });
-        }).catch(err => {
-            console.log(err);
-            // if error then redirect to home page
-            res.redirect("/");
-        })
+        client.query("SELECT * FROM blogs ORDER BY created_at DESC")
+            .then(result => {
+                articles = result['rows']
+                res.render("index", { articles: articles, title: title, login_auth: auth, session_id: '1', uid: decryptedString, msg: msg });
+            }).catch(err => {
+                console.log(err);
+                // if error then redirect to home page
+                res.redirect("/");
+            })
     } else {
         auth = '<a href="/login">Login</a>';
         //fetch blogs from database
         const client = new Pool(config);
-        client.query( "SELECT * FROM blogs ORDER BY created_at DESC")
-        .then(result => {
-            articles = result['rows']
-            res.render("index", { articles: articles, title: title, login_auth: auth });
-        }).catch(err => {
-            console.log(err);
-            // if error then redirect to home page
-            res.redirect("/");
-        })
+        client.query("SELECT * FROM blogs ORDER BY created_at DESC")
+            .then(result => {
+                articles = result['rows']
+                res.render("index", { articles: articles, title: title, login_auth: auth, msg: '', session_id: '0' });
+            }).catch(err => {
+                console.log(err);
+                // if error then redirect to home page
+                res.redirect("/");
+            })
     }
 });
 
@@ -158,7 +161,7 @@ app.post("/verified", async(req, res, next) => {
     await client.query("SELECT * FROM public.users where user_id=$1 and verify=$2", [hid, verified]).then(verified_login => {
         client.release();
         if (verified_login.rowCount == '1') {
-
+            email = verified_login.rows[0].email;
             sess = req.session;
             sess.id = req.session.id;
             res.locals.id = req.session.id;
@@ -169,7 +172,7 @@ app.post("/verified", async(req, res, next) => {
             res.redirect('/');
         } else {
 
-            var record1 = { 'msg': 'Please Enter Right code', 'hid': req.body.hid };
+            var record1 = { 'msg': 'Please Enter Right code', 'hid': req.body.hid, uid: req.body.hid };
             return res.render('verified', { msg: record1 });
         }
     });
@@ -177,26 +180,48 @@ app.post("/verified", async(req, res, next) => {
 
 
 // register user function
-app.post("/register", async(req, res) => {
+app.post("/register", async(req, res, next) => {
     const { username, email, password, twofa } = req.body;
     const salt = randomBytes(16).toString('hex');
     const hashedPassword = hash(password + salt);
 
     // insert user into database
-    try {
-        const client = new Pool(config);
-        const result = await client.query(
-            "INSERT INTO users (username, email, password, salt, twofa) VALUES ($1, $2, $3, $4, $5) RETURNING *", 
-            [username, email, hashedPassword, salt, twofa]
-        );
 
-        res.render('register', { record: "user succesfully updated::" + email });
+    const client = new Pool(config);
+    const result = await client.query("INSERT INTO users (username, email, password, salt, twofa) VALUES ($1, $2, $3, $4, $5) RETURNING *", [username, email, hashedPassword, salt, twofa]).then(results_insert => {
+
+        // console.log(results_insert.rows[0]);
+        const write_user_id = results_insert.rows[0].user_id;
+        const email = results_insert.rows[0].email;
+
+        // console.log(email);
+        sess = req.session;
+        sess.id = req.session.id;
+        client.query("SELECT * FROM blogs ORDER BY created_at DESC")
+            .then(result => {
+                articles = result['rows']
+                    //  articles = result['rows']
+                res.locals.id = req.session.id;
+                encryptedString = cryptr.encrypt(write_user_id);
+
+                let session_id1 = res.cookie('session_id', sess.id, { maxAge: 900000, secure: true, httpOnly: true });
+                let write_id = res.cookie('user_id', encryptedString, { maxAge: 900000, secure: true, httpOnly: true });
+
+                log_out = "<a href = '/logout' > Logout </a>";
+                // return res.render('index', { log_out: log_out });
+                res.render('index', { articles: articles, msg: "user succesfully register::" + email, login_auth: log_out, session_id: '1', uid: write_user_id });
+
+            });
+
+
+    }).catch(err => {
+
         // res.redirect("/login");
-    } catch (err) {
-        console.log(err);
-        res.render('register', { record: "Email or username already exists, please try loggin in" });
+        // console.log(err);
+        auth = '<a href="/login">Login</a>';
+        res.render('register', { record: "Email or username already exists, please try agian", login_auth: auth });
         // res.send("Email or username already exists, please try loggin in.");
-    }
+    });
 });
 
 // login verification function
@@ -230,7 +255,7 @@ app.post('/login', async(req, res, next) => {
                             from: "noreply@gmail.com",
                             to: email_v,
                             subject: "Please Enter the 4 digit code in blogs website ",
-                            text: `${val}`
+                            text: 'Enter four digit code ' + `${val}`
                         }
                         // console.log(message);
 
@@ -258,19 +283,19 @@ app.post('/login', async(req, res, next) => {
                     sess.id = req.session.id;
                     res.locals.id = req.session.id;
                     // console.log(message);
-                    const encryptedString = cryptr.encrypt(write_user_id);
+                    client.query("SELECT * FROM blogs ORDER BY created_at DESC").then(result => {
+                        articles = result['rows']
+                        const encryptedString = cryptr.encrypt(write_user_id);
 
-                    let session_id1 = res.cookie('session_id', sess.id, { maxAge: 900000, secure: true, httpOnly: true });
-                    let write_id = res.cookie('user_id', encryptedString, { maxAge: 900000, secure: true, httpOnly: true });
-                    //  console.log(res.locals.id);
-                    //  console.log(req.headers.cookie);
-                    //localStorage.setItem('key', 'New Value');
-                    // sessionStorage.getItem('seesion_id', id);
-                    //localStorage.setItem('seesion_id', id);
-                    //  res.cookie('pardeep', 'kjghjhv', { maxAge: 900000, httpOnly: true });
-                    // res.cookie("username", username);
-                    log_out = "<a href = '/logout' > Logout </a>";
-                    return res.render('index', { log_out: log_out });
+                        let session_id1 = res.cookie('session_id', sess.id, { maxAge: 900000, secure: true, httpOnly: true });
+                        let write_id = res.cookie('user_id', encryptedString, { maxAge: 900000, secure: true, httpOnly: true });
+
+                        log_out = "<a href = '/logout' > Logout </a>";
+                        return res.render('index', { login_auth: log_out, session_id: '1', articles: articles, uid: write_user_id });
+
+                    });
+
+                    // res.redirect('/');
                 }
             } else {
                 res.render('Login', { login_ss: 'Email ID or Password is wrong' });
@@ -293,7 +318,7 @@ app.get('/logout', (req, res) => {
     req.session.destroy((err) => {
         if (err) {
             return console.log(err);
-        }else{
+        } else {
             res.clearCookie("session_id");
             res.clearCookie("user_id");
 
@@ -307,41 +332,162 @@ app.get('/logout', (req, res) => {
 
 //articles section ggggg
 app.get('/create_blog', (req, res) => {
-    res.render('create_blog');
+    let title = "Blog Website";
+
+    let articles = [];
+    if (req.cookies.user_id) {
+        auth = '<a href="/logout">Logout</a>';
+
+        res.render('create_blog', { login_auth: auth });
+    } else {
+
+        auth = '<a href="/login">Login</a>';
+        //fetch blogs from database
+        const client = new Pool(config);
+        client.query("SELECT * FROM blogs ORDER BY created_at DESC")
+            .then(result => {
+                articles = result['rows']
+                res.render("index", { articles: articles, title: title, login_auth: auth, msg: 'Please login first', session_id: '0' });
+            }).catch(err => {
+                console.log(err);
+                // if error then redirect to home page
+                // console.log('create log');
+                res.redirect("/");
+            })
+            //res.render("blog", { msg: 'please login first' });
+
+    }
 })
+app.get('/delete/:id', function(req, res, next) {
+    // console.log(req.params.id);
+    const blog1_id = req.params.id;
+    if (req.cookies.user_id) {
+        const client = new Pool(config);
+        sess = req.session;
+        //msg = 'Successful Delet Blog ';
+        client.query(`DELETE FROM public.blogs WHERE blog_id='${blog1_id}'`).then(result => {
+
+
+            res.redirect('/');
+        });
+
+
+
+    } else {
+
+
+
+    }
+
+
+
+
+});
+
+app.get('/edit_blog/:id', function(req, res, next) {
+    const blog1_id = req.params.id;
+    if (req.cookies.session_id) {
+
+
+
+        const client = new Pool(config);
+        client.query(`SELECT * FROM blogs where blog_id=${blog1_id}`)
+            .then(result => {
+
+                blog_id = result.rows[0].blog_id;
+                title = result.rows[0].title;
+                content = result.rows[0].content;
+                user_id = result.rows[0].user_id;
+                auth = '<a href = "/logout" > Logout </a>';
+                res.render('edit_view', { login_auth: auth, blog_id: blog_id, title: title, content: content, user_id: user_id });
+            });
+
+
+    } else {
+
+        res.redirect('/');
+
+
+    }
+
+
+
+});
+app.post('/edit_blog/update', async(req, res, next) => {
+    console.log(req.body);
+
+    if (req.cookies.user_id) {
+        const client = new Pool(config);
+
+        client.query(`UPDATE public.blogs	SET  title='${req.body.title}', content='${req.body.content}'	WHERE user_id='${req.body.user_id}' AND blog_id='${req.body.blog_id}'`).then(result => {
+            client.query(`SELECT * FROM blogs where user_id='${req.body.user_id}' AND blog_id='${req.body.blog_id}'`)
+                .then(update_result => {
+
+                    auth = '<a href = "/logout" > Logout </a>';
+                    res.render('blog', { login_auth: auth, title: update_result.rows[0].title, content: update_result.rows[0].content });
+
+
+                });
+
+        });
+    } else {
+
+        res.redirect('/');
+
+    }
+
+});
+
+
 
 // render article page
 app.get('/blog/:id', function(req, res) {
     console.log(req.params.id);
     const client = new Pool(config);
-    client.query( "SELECT * FROM blogs WHERE blog_id = $1", [req.params.id])
-    .then(result => {
-        console.log('asdfag')
-        res.render('blog', {article: result.rows[0]});
-    }).catch(err => {
-        console.log(err);
-        // if error then redirect to home page
-        res.redirect('/');
-    })
+    client.query("SELECT * FROM blogs WHERE blog_id = $1", [req.params.id])
+        .then(result => {
+            //console.log('asdfag')
+            auth = '<a href = "/logout" > Logout </a>';
+            // res.render('/', { login_auth: auth });
+            res.render('blog', { article: result.rows[0], login_auth: auth });
+        }).catch(err => {
+            console.log(err);
+            // if error then redirect to home page
+            res.redirect('/');
+        })
 })
 
-app.post('/new_blog', async (req, res) => {
-    const { title, content } = req.body;
-    const dateCreated = new Date();
+app.post('/new_blog', async(req, res, next) => {
+    let title1 = "Blog Website";
+    if (req.cookies.user_id) {
 
-    const user_id = 7
-    const client = new Pool(config);
-     client.query(
-       "INSERT INTO blogs (title, content, user_id, created_at) VALUES ($1, $2, $3, $4) RETURNING *",
-        [title, content, user_id, dateCreated]
-     ).then(results => {
-        const blog_id = results.rows[0].blog_id;
-        res.render('blog', {blog_id:blog_id});
-    //     res.redirect(`/:${blog_id}`, { record: "article succesfully updated::" + title });
-    // }).catch(err => {
-    //     console.log(err);
-    //    // res.render('create_blog', { record: "article failed to update::" + title });
-})
+        const { title, content } = req.body;
+        const dateCreated = new Date();
+        let articles = [];
+        const decryptedString = cryptr.decrypt(req.cookies.user_id);
+        //console.log(decryptedString);
+        const user_id = decryptedString;
+        const client = new Pool(config);
+        client.query(
+            "INSERT INTO blogs (title, content, user_id, created_at) VALUES ($1, $2, $3, $4) RETURNING *", [title, content, user_id, dateCreated]
+        ).then(results => {
+            const blog_id = results.rows[0].blog_id;
+
+            const articles = results.rows[0];
+            auth = '<a href = "/logout" > Logout </a>';
+            res.render("blog", { article: articles, title: title1, login_auth: auth });
+
+        })
+
+    } else {
+        // console.log('jhvhmcvngcngmcdhgdhgdhg');
+        res.render("blog", { msg: 'Please login first' });
+
+
+
+    }
+
+
 })
 
 
