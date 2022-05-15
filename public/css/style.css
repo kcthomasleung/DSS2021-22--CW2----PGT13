@@ -116,7 +116,7 @@ a:active {
     box-sizing: border-box;
 }
 
-form.example input[type=text] {
+.sr1 {
     padding: 7px;
     font-size: 10px;
     border: 1px solid grey;
@@ -138,7 +138,7 @@ header a {
     padding: 7px;
 }
 
-form.example button {
+div.example button {
     height: 27px;
     position: absolute;
     float: left;
@@ -152,11 +152,11 @@ form.example button {
     margin: -17px 1px 1px 3px;
 }
 
-form.example button:hover {
+div.example button:hover {
     background: #0b7dda;
 }
 
-form.example::after {
+.sr1::after {
     content: "";
     clear: both;
     display: table;
