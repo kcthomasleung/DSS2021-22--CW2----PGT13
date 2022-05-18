@@ -61,11 +61,12 @@ app.use(session({
 }));
 //set view engine to use ejs templates
 app.set("view engine", "ejs");
-
+title = '';
 login_auth = '';
 msg = '';
 verified = '';
 article = '';
+article.title = '';
 var transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
     port: 465,
@@ -251,7 +252,6 @@ app.post('/login', async (req, res, next) => {
                         subject: "Please Enter the 4 digit code in blogs website ",
                         text: 'Enter four digit code ' + `${val}`
                     }
-                    // console.log(message);
 
                     transporter.sendMail(message, function (err, info) {
                         if (err) {
@@ -441,7 +441,7 @@ app.post('/new_blog', async (req, res, next) => {
 app.post('/search', async (req, res, next) => {
 
     const client = new Pool(config);
-    client.query("SELECT * FROM blogs WHERE title like $1", [req.body.search_key])
+    client.query("SELECT * FROM blogs WHERE title like %$1%", [req.body.search_key])
         .then(result => {
             if (req.cookies.user_id) {
                 auth = '<a href = "/logout" > Logout </a>';
@@ -459,7 +459,7 @@ app.post('/search', async (req, res, next) => {
 app.post('/blog/search', async (req, res, next) => {
 
     const client = new Pool(config);
-    client.query("SELECT * FROM blogs WHERE title like $1", [req.body.search_key])
+    client.query("SELECT * FROM blogs WHERE title like %$1%", [req.body.search_key])
         .then(result => {
             if (req.cookies.user_id) {
                 auth = '<a href = "/logout" > Logout </a>';
