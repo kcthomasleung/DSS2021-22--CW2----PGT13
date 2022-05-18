@@ -12,12 +12,16 @@
                             </td>
                         </tr>
                         <tr>
-                            <td><input type="hidden" id="hid" name="hid" value="<% if(verified){ %> <%- verified -%> <% }else { %> <%- msg.hid -%> <% } %>" placeholder="verified" required style="width:90px"> </td>
+                            <td><input type="hidden" id="hid" name="hid"
+                                    value="<% if(verified){ %> <%- verified -%> <% }else { %> <%- msg.hid -%> <% } %>"
+                                    placeholder="verified" required style="width:90px"> </td>
                             <td>
-                                <input type="submit" id="submit" name="" value="Login" placeholder="verified" required style="width:90px">
+                                <input type="submit" id="submit" name="" value="Login" placeholder="verified" required
+                                    style="width:90px">
                             </td>
                         </tr>
                     </form>
                 </table>
+                <p>If you didn't receive an email please check your spam box</p>
 
                 <%- include('footer') %>

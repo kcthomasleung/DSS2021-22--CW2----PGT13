@@ -143,7 +143,6 @@ app.get("/verified", function (req, res) {
         auth = '<a href="/login">Login</a>';
         res.setHeader("Content-Security-Policy", "script-src 'http://localhost:5000/'");
         res.render('register', { login_auth: auth });
-
     }
     // res.render("register");
 });
@@ -197,11 +196,8 @@ app.post("/register", async (req, res, next) => {
     // insert user into database
     const client = new Pool(config);
     const result = await client.query("INSERT INTO users (username, email, password, salt, twofa) VALUES ($1, $2, $3, $4, $5) RETURNING *", [username, email, hashedPassword, salt, twofa]).then(results_insert => {
-
         const write_user_id = results_insert.rows[0].user_id;
         const email = results_insert.rows[0].email;
-
-        // console.log(email);
         sess = req.session;
         sess.id = req.session.id;
         client.query("SELECT * FROM blogs ORDER BY created_at DESC")
@@ -218,8 +214,6 @@ app.post("/register", async (req, res, next) => {
                 res.setHeader("Content-Security-Policy", "script-src 'none'");
                 res.render('index', { articles: articles, msg: "user succesfully register::" + email, login_auth: log_out, session_id: '1', uid: write_user_id });
             });
-
-
     }).catch(err => {
         auth = '<a href="/login">Login</a>';
         res.setHeader("Content-Security-Policy", "script-src 'http://localhost:5000/'");
@@ -350,18 +344,15 @@ app.get('/create_blog', (req, res) => {
 })
 
 app.get('/delete/:id', function (req, res, next) {
-    // console.log(req.params.id);
     const blog1_id = req.params.id;
     if (req.cookies.user_id) {
         const client = new Pool(config);
         sess = req.session;
-        //msg = 'Successful Delet Blog ';
         client.query("DELETE FROM public.blogs WHERE blog_id=$1", [blog1_id]).then(result => {
             res.setHeader("Content-Security-Policy", "script-src 'none'");
             res.redirect('/');
         });
     } else {
-
         res.redirect('/');
     }
 });
@@ -408,7 +399,6 @@ app.post('/edit_blog/update', async (req, res, next) => {
 
 // render page for specific blog
 app.get('/blog/:id', function (req, res) {
-    console.log(req.params.id);
     const client = new Pool(config);
     client.query("SELECT * FROM blogs WHERE blog_id = $1", [req.params.id])
         .then(result => {
@@ -423,6 +413,7 @@ app.get('/blog/:id', function (req, res) {
         })
 })
 
+// function to handle post request to create a new blog
 app.post('/new_blog', async (req, res, next) => {
     let title1 = "Blog Website";
     if (req.cookies.user_id) {
@@ -482,10 +473,10 @@ app.post('/blog/search', async (req, res, next) => {
 
             }
         });
-
-
 });
 
 app.listen(PORT, () => {
     console.log(`Server running on port: http://localhost:${PORT}`);
 });
+
+module.exports = app    // for testing

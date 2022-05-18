@@ -2,14 +2,18 @@
     <script src="../public/js/index.js" defer></script>
     <%- include('header') %>
         <br><br><br>
-        <label class="display_msg"><%- msg %></label>
+        <label class="display_msg">
+            <%- msg %>
+        </label>
         <main id="container">
             <a href="/create_blog" class="create_article_btn"><u>Create Aritcle</u></a>
             <br><br>
-            <% articles.forEach(article => { %>
+            <% articles.forEach(article=> { %>
 
-                <%  if(session_id =='1' && uid==article.user_id){ %>
-                    <div style="position: absolute;margin: 3px 0px 0px 449px;font-size: 13px;"> <a href="/edit_blog/<%= article.blog_id %>" style="color:brown">Edit</a>&nbsp;&nbsp;&nbsp;<a href="/delete/<%= article.blog_id %>" style="color:red">Delet</a></div>
+                <% if(session_id=='1' && uid==article.user_id){ %>
+                    <div style="position: absolute;margin: 3px 0px 0px 449px;font-size: 13px;"> <a
+                            href="/edit_blog/<%= article.blog_id %>" style="color:brown">Edit</a>&nbsp;&nbsp;&nbsp;<a
+                            href="/delete/<%= article.blog_id %>" style="color:red">Delete</a></div>
                     <% } %>
                         <a href="/blog/<%= article.blog_id %>">
 
@@ -18,7 +22,8 @@
                                     <%= article.title %>
                                 </h4>
                         </a>
-                        <div class="card_date" data-config="{ 'type': 'table', 'limit': 140, 'number': true, 'more': '&#8594; show more', 'less': '&#8592; less' }">
+                        <div class="card_date"
+                            data-config="{ 'type': 'table', 'limit': 140, 'number': true, 'more': '&#8594; show more', 'less': '&#8592; less' }">
                             <%= article.created_at %>
                         </div>
                         <div class="card_content">
