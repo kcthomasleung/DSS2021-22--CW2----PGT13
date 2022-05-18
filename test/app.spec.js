@@ -59,9 +59,6 @@ describe('/GET/blog/:id app', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object');
-                // res.body.should.have.property('article');
-                // res.body.should.have.property('content');
-                // res.body.should.have.property('id').eql(blog.id);
                 done();
             });
     });
