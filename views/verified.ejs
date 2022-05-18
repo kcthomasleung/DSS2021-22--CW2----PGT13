@@ -3,7 +3,8 @@
 
         <main id="blogs">
             <%- msg.msg -%>
-                <table class="register_table">
+                <table class="register_table" style="margin-top: 97px !important; position: absolute;
+            ">
                     <form id="register_form" action="verified" method="post" enctype="text/html">
                         <tr>
                             <td> <label for="email">Please Enter Four digit code </label></td>
@@ -22,6 +23,7 @@
                         </tr>
                     </form>
                 </table>
-                <p>If you didn't receive an email please check your spam box</p>
+                <p style="  margin-top: 425px;position: absolute; color: red;">If you didn't receive an email please
+                    check your spam box</p>
 
                 <%- include('footer') %>
