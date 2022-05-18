@@ -2,28 +2,32 @@
     <%- include('header') %>
 
         <main id="blogs">
-            <%- msg.msg -%>
-                <table class="register_table" style="margin-top: 97px !important; position: absolute;
+            <h4 style="position: absolute;
+            margin-top: 45px;
+            color: red;">
+                <%- msg.msg -%>
+            </h4>
+            <table class="register_table" style="margin-top: 97px !important; position: absolute;
             ">
-                    <form id="register_form" action="verified" method="post" enctype="text/html">
-                        <tr>
-                            <td> <label for="email">Please Enter Four digit code </label></td>
-                            <td>
-                                <input type="number" id="verified" name="verified" placeholder="verified" required>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><input type="hidden" id="hid" name="hid"
-                                    value="<% if(verified){ %> <%- verified -%> <% }else { %> <%- msg.hid -%> <% } %>"
-                                    placeholder="verified" required style="width:90px"> </td>
-                            <td>
-                                <input type="submit" id="submit" name="" value="Login" placeholder="verified" required
-                                    style="width:90px">
-                            </td>
-                        </tr>
-                    </form>
-                </table>
-                <p style="  margin-top: 425px;position: absolute; color: red;">If you didn't receive an email please
-                    check your spam box</p>
+                <form id="register_form" action="verified" method="post" enctype="text/html">
+                    <tr>
+                        <td> <label for="email">Please Enter Four digit code </label></td>
+                        <td>
+                            <input type="number" id="verified" name="verified" placeholder="verified" required>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><input type="hidden" id="hid" name="hid"
+                                value="<% if(verified){ %> <%- verified -%> <% }else { %> <%- msg.hid -%> <% } %>"
+                                placeholder="verified" required style="width:90px"> </td>
+                        <td>
+                            <input type="submit" id="submit" name="" value="Login" placeholder="verified" required
+                                style="width:90px">
+                        </td>
+                    </tr>
+                </form>
+            </table>
+            <p style="  margin-top: 425px;position: absolute; color: red;">If you didn't receive an email please
+                check your spam box</p>
 
-                <%- include('footer') %>
+            <%- include('footer') %>
